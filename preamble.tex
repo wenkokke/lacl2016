@@ -1,5 +1,8 @@
 \usepackage{cmap}
 
+\usepackage{geometry}
+\geometry{a4paper, hmargin = {5cm, 4cm}, vmargin = {4.5cm, 6.5cm}}
+
 \usepackage[greek,english]{babel}
 \languageattribute{greek}{polutoniko}
 \usepackage{hyperref}
@@ -17,11 +20,12 @@
 \usepackage{bussproofs}
 \usepackage{graphicx}
 \EnableBpAbbreviations
+\def\fCenter{\mathbin{\vdash}}
 \usepackage{mdframed}
-\newenvironment{scprooftree}[1]%
+\newenvironment{scprooftree}[1][1.0]%
   {\gdef\scalefactor{#1}\begin{center}\proofSkipAmount \leavevmode}%
   {\scalebox{\scalefactor}{\DisplayProof}\proofSkipAmount \end{center} }
-\newenvironment{scprooftree*}[1]%
+\newenvironment{scprooftree*}[1][1.0]%
   {\gdef\scalefactor{#1} \leavevmode\hbox\bgroup}%
   {\scalebox{\scalefactor}{\DisplayProof} \egroup}
 
@@ -47,11 +51,17 @@
 \newcommand{\mathplus}[0]{+}
 
 % abbrev.
-\def\NLIBC{NL$_{\text{IBC}}$}
+\def\NLCL{NL$_{\text{IBC}}$}
 \def\I{\ensuremath{\mathbf{I}}}
 \def\B{\ensuremath{\mathbf{B}}}
 \def\C{\ensuremath{\mathbf{C}}}
 \def\Q{\ensuremath{\mathbf{Q}}}
+\def\prod{\bullet}
+\def\impr{\backslash}
+\def\impl{\slash}
+\def\hprod{\circ}
+\def\himpr{\fatbslash}
+\def\himpl{\fatslash}
 
 % only during writing
 \usepackage{xcolor}
