@@ -1,0 +1,57 @@
+\usepackage{cmap}
+
+\usepackage[greek,english]{babel}
+\languageattribute{greek}{polutoniko}
+\usepackage{hyperref}
+\addto\extrasenglish{\def\figureautorefname{figure}}
+\addto\extrasenglish{\def\subsectionautorefname{section}}
+\addto\extrasenglish{\def\subsubsectionautorefname{section}}
+
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{stmaryrd}
+\usepackage{comment}
+\usepackage{ifthen}
+\usepackage{makeidx}
+
+\usepackage{bussproofs}
+\usepackage{graphicx}
+\EnableBpAbbreviations
+\usepackage{mdframed}
+\newenvironment{scprooftree}[1]%
+  {\gdef\scalefactor{#1}\begin{center}\proofSkipAmount \leavevmode}%
+  {\scalebox{\scalefactor}{\DisplayProof}\proofSkipAmount \end{center} }
+\newenvironment{scprooftree*}[1]%
+  {\gdef\scalefactor{#1} \leavevmode\hbox\bgroup}%
+  {\scalebox{\scalefactor}{\DisplayProof} \egroup}
+
+\usepackage{natbib}
+\usepackage{etoolbox}
+\usepackage{xstring}
+\makeatletter
+\patchcmd{\NAT@test}{\else \NAT@nm}{\else \NAT@nmfmt{\NAT@nm}}{}{}
+
+\DeclareRobustCommand\citepos
+  {\begingroup
+   \let\NAT@nmfmt\NAT@posfmt% ...except with a different name format
+   \NAT@swafalse\let\NAT@ctype\z@\NAT@partrue
+   \@ifstar{\NAT@fulltrue\NAT@citetp}{\NAT@fullfalse\NAT@citetp}}
+
+\let\NAT@orig@nmfmt\NAT@nmfmt
+\def\NAT@posfmt#1{%
+  \StrRemoveBraces{#1}[\NAT@temp]%
+  \IfEndWith{\NAT@temp}{s}
+    {\NAT@orig@nmfmt{#1'}}
+    {\NAT@orig@nmfmt{#1's}}}
+\makeatother
+\newcommand{\mathplus}[0]{+}
+
+% abbrev.
+\def\NLIBC{NL$_{\text{IBC}}$}
+\def\I{\ensuremath{\mathbf{I}}}
+\def\B{\ensuremath{\mathbf{B}}}
+\def\C{\ensuremath{\mathbf{C}}}
+\def\Q{\ensuremath{\mathbf{Q}}}
+
+% only during writing
+\usepackage{xcolor}
