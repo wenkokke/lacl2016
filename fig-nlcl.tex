@@ -1,0 +1,79 @@
+\begin{figure}[h]
+  \centering
+
+  \begin{scprooftree*}
+    \AXC{}\RightLabel{Ax}\UIC{$A\fCenter A$}
+  \end{scprooftree*}
+
+  \vspace*{1\baselineskip}
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter A$}
+    \AXC{$\Sigma[B]\fCenter C$}
+    \RightLabel{$\impr L$}
+    \BIC{$\Sigma[\Gamma\prod A\impr B]\fCenter C$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$A\prod\Gamma\fCenter B$}
+    \RightLabel{$\impr R$}
+    \UIC{$\Gamma\fCenter A\impr B$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter A$}
+    \AXC{$\Sigma[B]\fCenter C$}
+    \RightLabel{$\impl L$}
+    \BIC{$\Sigma[B\impl A \prod\Gamma]\fCenter C$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma\prod A\fCenter B$}
+    \RightLabel{$\impl R$}
+    \UIC{$\Gamma\fCenter B\impl A$}
+  \end{scprooftree*}
+
+  \vspace*{1\baselineskip}
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter A$}
+    \AXC{$\Sigma[B]\fCenter C$}
+    \RightLabel{$\himpr L$}
+    \BIC{$\Sigma[\Gamma\hprod A\himpr B]\fCenter C$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$A\hprod\Gamma\fCenter B$}
+    \RightLabel{$\himpr R$}
+    \UIC{$\Gamma\fCenter A\himpr B$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter A$}
+    \AXC{$\Sigma[B]\fCenter C$}
+    \RightLabel{$\himpl L$}
+    \BIC{$\Sigma[B\himpl A \hprod\Gamma]\fCenter C$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma\hprod A\fCenter B$}
+    \RightLabel{$\himpl R$}
+    \UIC{$\Gamma\fCenter B\himpl A$}
+  \end{scprooftree*}
+
+  \vspace*{1\baselineskip}
+  \begin{scprooftree*}
+    \AXC{$\Sigma[A]\fCenter B$}
+    \doubleLine\RightLabel{\I}
+    \UIC{$\Sigma[A\hprod \I]\fCenter B$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Sigma[A\prod(B\hprod C)]\fCenter D$}
+    \doubleLine\RightLabel{\B}
+    \UIC{$\Sigma[B\hprod((\B\prod A)\prod C)]\fCenter D$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Sigma[(A\hprod B)\prod C]\fCenter D$}
+    \doubleLine\RightLabel{\C}
+    \UIC{$\Sigma[A\hprod((\C\prod B)\prod C)]\fCenter D$}
+  \end{scprooftree*}
+
+  \caption{\NLCL\ as presented by \citet{barker2015}.}
+  \label{fig:nlcl}
+\end{figure}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

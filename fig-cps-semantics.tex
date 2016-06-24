@@ -1,0 +1,63 @@
+\begin{figure}[h]
+  \centering
+  \scalebox{\defscalefactor}{\(
+    s^*  = \t,
+    \qquad
+    n^*  = \e\t,
+    \qquad
+    np^* = \e,
+    \qquad
+    \ldots
+  \)}
+
+  \vspace*{1\baselineskip}
+  \scalebox{\defscalefactor}{\(
+    \begin{aligned}
+      &\tr{\alpha}^+ &&=
+      \begin{cases}
+        \phantom{((}\alpha^*
+        &
+        \mbox{if Pol}(\alpha)={+}
+        \\
+        ((\alpha^*)^R)^R
+        &
+        \mbox{if Pol}(\alpha)={-}
+      \end{cases}
+      \quad
+      &&\tr{\alpha}^- &&= (\alpha^*)^R
+      \\
+      &\tr{A\impr B}^+ &&= (\tr{A}^+\times\tr{B}^-)^R
+      \quad
+      &&\tr{A\impr B}^- &&= \tr{A}^+\times\tr{B}^-
+      \\
+      &\tr{B\impl A}^+ &&= (\tr{B}^-\times\tr{A}^+)^R
+      \quad
+      &&\tr{B\impl A}^- &&= \tr{B}^-\times\tr{A}^+
+      \\
+      &\tr{\di A}^+ &&= \tr{A}^++
+      \quad
+      &&\tr{\di A}^- &&= (\tr{A}^++)^R
+      \\
+      &\tr{\sq A}^+ &&= (\tr{A}^++)^R
+      \quad
+      &&\tr{\sq A}^- &&= \tr{A}^++
+      \\
+    \end{aligned}
+  \)}
+
+  \vspace*{1\baselineskip}
+  \scalebox{\defscalefactor}{\(
+    \tr{\Gamma\fCenter\Delta} = \tr{\Gamma}\fCenter\tr{\Delta}
+    \qquad
+    \tr{\fc{A}\fCenter\Delta} = \tr{\Delta}\fCenter\tr{A}^-
+    \qquad
+    \tr{\Gamma\fCenter\fc{A}} = \tr{\Gamma}\fCenter\tr{A}^+
+  \)}
+
+  \caption{CPS semantics for focused \NLCL.}
+  \label{fig:cps-semantics}
+\end{figure}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

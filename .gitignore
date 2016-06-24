@@ -7,3 +7,5 @@ dungeons
 *.log
 *.out
 *.pdf
+.shake.database
+_build/

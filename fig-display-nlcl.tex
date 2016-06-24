@@ -1,0 +1,210 @@
+\begin{figure}[h]
+  \centering
+  \scalebox{\defscalefactor}{\(\!
+    \begin{aligned}
+      &\text{Atom } \alpha &&::= {s}\mid{n}\mid{np}\mid\ldots\\
+      &\text{Type } A, B   &&::= {\alpha}\mid{A\impr B}\mid{B\impl A}
+      \mid{A\himpr B}\mid{B\himpl A}\mid{\di A}\mid{\sq A}\\
+      &\text{Struct$^-$ } \Delta &&::= \st{A}\mid
+      {\Gamma\impr\Delta}\mid{\Delta\impl\Gamma}\mid
+      {\Gamma\himpr\Delta}\mid{\Delta\himpl\Gamma}\mid{\sq[\Delta]}\\
+      &\text{Struct$^+$ } \Gamma &&::=
+      \st{A}\mid{\Gamma_1\prod\Gamma_2}\mid{\Gamma_1\hprod\Gamma_2}\mid
+      \I\mid\B\mid\C\mid{\di[\Gamma]}\\
+      &\text{Context } \Sigma &&::=
+      \Box\mid{\Sigma\prod\Gamma}\mid{\Gamma\prod\Sigma}
+    \end{aligned}
+  \)}
+
+  \vspace*{1\baselineskip}
+  \scalebox{\defscalefactor}{\(\!
+    \text{Pol}(s) = -,
+    \qquad
+    \text{Pol}(n) = +,
+    \qquad
+    \text{Pol}(np) = +,
+    \qquad
+    \ldots
+  \)}
+
+  \vspace*{1\baselineskip}
+  \scalebox{\defscalefactor}{\(\!
+    \text{if}\ \text{Pol}(\alpha) = {-}
+    \left\lbrace
+      \quad
+      \begin{aligned}
+        \AXC{}
+        \RightLabel{Ax$^L$}
+        \UIC{$\fc{\alpha}\fCenter\st{\alpha}$}
+        \DisplayProof
+      \end{aligned}
+      \quad
+      \middle\vert
+      \quad
+      \begin{aligned}
+        \AXC{}
+        \RightLabel{Ax$^R$}
+        \UIC{$\st{\alpha}\fCenter\fc{\alpha}$}
+        \DisplayProof
+      \end{aligned}
+      \quad
+    \right\rbrace
+    \text{if}\ \text{Pol}(\alpha) = {+}
+  \)}
+
+  \vspace*{1\baselineskip}
+  \scalebox{\defscalefactor}{\(\!
+    \text{if}\ \text{Pol}(A) = {-}
+    \left\lbrace
+      \quad
+      \begin{aligned}
+        \AXC{$\fc{A}\fCenter\Delta$}
+        \RightLabel{Foc$^L$}
+        \UIC{$\st{A}\fCenter\Delta$}
+        \DisplayProof
+        \\[1\baselineskip]
+        \AXC{$\Gamma\fCenter\st{A}$}
+        \RightLabel{Unf$^R$}
+        \UIC{$\Gamma\fCenter\fc{A}$}
+        \DisplayProof
+      \end{aligned}
+      \quad
+      \middle\vert
+      \quad
+      \begin{aligned}
+        \AXC{$\Gamma\fCenter\fc{A}$}
+        \RightLabel{Foc$^R$}
+        \UIC{$\Gamma\fCenter\st{A}$}
+        \DisplayProof
+        \\[1\baselineskip]
+        \AXC{$\st{A}\fCenter\Delta$}
+        \RightLabel{Unf$^L$}
+        \UIC{$\fc{A}\fCenter\Delta$}
+        \DisplayProof
+      \end{aligned}
+      \quad
+    \right\rbrace
+    \text{if}\ \text{Pol}(A) = {+}
+  \)}
+
+  \vspace*{1\baselineskip}
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter\fc{A}$}
+    \AXC{$\fc{B}\fCenter \Delta$}
+    \RightLabel{$\impr L$}
+    \BIC{$\fc{A\impr B}\fCenter\Gamma\impr\Delta$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter\st{A}\impr\st{B}$}
+    \RightLabel{$\impr R$}
+    \UIC{$\Gamma\fCenter\st{A\impr B}$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter\fc{A}$}
+    \AXC{$\fc{B}\fCenter\Delta$}
+    \RightLabel{$\impl L$}
+    \BIC{$\fc{B\impl A}\fCenter \Delta\impl\Gamma$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter\st{B}\impl\st{A}$}
+    \RightLabel{$\impl R$}
+    \UIC{$\Gamma\fCenter\st{B\impl A}$}
+  \end{scprooftree*}
+
+  \vspace*{1\baselineskip}
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter\fc{A}$}
+    \AXC{$\fc{B}\fCenter \Delta$}
+    \RightLabel{$\himpr L$}
+    \BIC{$\fc{A\himpr B}\fCenter\Gamma\himpr\Delta$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter\st{A}\himpr\st{B}$}
+    \RightLabel{$\himpr R$}
+    \UIC{$\Gamma\fCenter\st{A\himpr B}$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter\fc{A}$}
+    \AXC{$\fc{B}\fCenter\Delta$}
+    \RightLabel{$\himpl L$}
+    \BIC{$\fc{B\himpl A}\fCenter\Delta\himpl\Gamma$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter\st{B}\himpl\st{A}$}
+    \RightLabel{$\himpl R$}
+    \UIC{$\Gamma\fCenter\st{B\himpl A}$}
+  \end{scprooftree*}
+
+  \vspace*{1\baselineskip}
+  \begin{scprooftree*}
+    \AXC{$\Gamma_2\fCenter\Gamma_1\impr\Delta$}
+    \doubleLine\RightLabel{Res$\impr\prod$}
+    \UIC{$\Gamma_1\prod\Gamma_2\fCenter\Delta$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma_1\fCenter\Delta\impl\Gamma_2$}
+    \doubleLine\RightLabel{Res$\impl\prod$}
+    \UIC{$\Gamma_1\prod\Gamma_2\fCenter\Delta$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma_2\fCenter\Gamma_1\himpr\Delta$}
+    \doubleLine\RightLabel{Res$\himpr\hprod$}
+    \UIC{$\Gamma_1\hprod\Gamma_2\fCenter\Delta$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma_1\fCenter\Delta\himpl\Gamma_2$}
+    \doubleLine\RightLabel{Res$\himpl\hprod$}
+    \UIC{$\Gamma_1\hprod\Gamma_2\fCenter\Delta$}
+  \end{scprooftree*}
+
+  \vspace*{1\baselineskip}
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter\Delta$}
+    \doubleLine\RightLabel{$\I$}
+    \UIC{$\Gamma\hprod\I\fCenter\Delta$}
+  \end{scprooftree*}
+  \begin{scprooftree*}
+    \AXC{$\Gamma_1\prod(\Gamma_2\hprod\Gamma_3)\fCenter\Delta$}
+    \doubleLine\RightLabel{$\B$}
+    \UIC{$\Gamma_2\hprod((\B\prod\Gamma_1)\prod\Gamma_3)\fCenter\Delta$}
+  \end{scprooftree*}
+  \begin{scprooftree*}
+    \AXC{$(\Gamma_1\hprod\Gamma_2)\prod\Gamma_3\fCenter\Delta$}
+    \doubleLine\RightLabel{$\C$}
+    \UIC{$\Gamma_1\hprod((\C\prod\Gamma_2)\prod\Gamma_3)\fCenter\Delta$}
+  \end{scprooftree*}
+
+  \vspace*{1\baselineskip}
+  \begin{scprooftree*}
+    \AXC{$\di[\st{A}]\fCenter\Delta$}
+    \RightLabel{$\di L$}
+    \UIC{$\st{\di A}\fCenter\Delta$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter\fc{B}$}
+    \RightLabel{$\di R$}
+    \UIC{$\di[\Gamma]\fCenter\fc{\di B}$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\fc{A}\fCenter\Delta$}
+    \RightLabel{$\sq L$}
+    \UIC{$\fc{\sq A}\fCenter\sq[\Delta]$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter\sq[\st{B}]$}
+    \RightLabel{$\sq R$}
+    \UIC{$\Gamma\fCenter\st{\sq B}$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter[\Delta]$}
+    \doubleLine\RightLabel{Res$\sq\di$}
+    \UIC{$\di[\Gamma]\fCenter\Delta$}
+  \end{scprooftree*}
+
+  \caption{\NLCL\ reworked as a focused display calculus.}
+  \label{fig:display-nlcl}
+\end{figure}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

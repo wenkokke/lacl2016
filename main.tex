@@ -1,38 +1,490 @@
 \documentclass[10pt,a4paper]{llncs}
 
-
-
-
+\frontmatter
 \input{preamble}
 
 \begin{document}
 
+\mainmatter
+\title{Strong and weak quantifiers in focused \NLCL}
+%\author{Pepijn Kokke}
+%\institute{%
+%  Institute for Logic, Language and Computation\\
+%  University of Amsterdam, Amsterdam\\
+%  \email{pepijn.kokke@gmail.com}}
+\maketitle
+
 \begin{abstract}
-  We examine a variant of \citepos{barker2015} \NLCL\ for
-  which derivability is decidable, and which can analyse scope
-  islands, and distinguish between strong and weak quantifiers.
+  We propose an improvement of \citepos{barker2015} \NLCL for which
+  derivability is decidable, which has a normal-form for proof search,
+  can analyse scope islands, and distinguish between strong and weak
+  quantifiers.
 \end{abstract}
 
-\begin{enumerate}\color{red}
-\item Description of the linguistic data;
-\item $q(A,B,C)$ connective and \citet{moortgat1996};
-\item \citet{barker2007} and \NLCL;
-\item No license for quantifier raising;
-\item Undecidability due to \I-rule;
-\item Addition of unary quantifying license \Q;
-\item Addition of diamond and box for scope islands;
-\item Reworking as display calculus;
-\item Addition of CPS-semantics;
-\item Analysis of strong and weak quantifiers.
-\end{enumerate}
 
+\section{Introduction}
+In this paper, we examine \citepos{barker2015} \NLCL. We discuss an
+extension to their logic, which allows us to analyse scope islands.
+We will then propose two extensions to analyse strong and weak
+quantifiers:
+\begin{enumerate*}[label=(\arabic*)]
+\item a syntactic mechanism, using the encodings of logical
+  combinators in the style of \citet{finger2001} and
+  \citet{barker2015}; and
+\item a \emph{combined} semantic and syntactic mechanism, using the
+  continuation-passing style (CPS) semantics described by
+  \citet{moortgat2012}.
+\end{enumerate*}
+To be able to use their CPS semantics, we develop a focused variant of
+\NLCL. An added benefit this is that we solve the problem of spurious
+ambiguity for this calculus. In closing, we briefly compare our solution
+to the purely semantic solution developed by \citet{kiselyov2014}.
+
+\subsubsection*{Linguistic data}
+We will start out by discussing the linguistic data which motivates
+our extensions to \NLCL.
+Examples (\ref{ex:scope-ambiguity}), (\ref{ex:scope-ambiguity}) and
+(\ref{ex:wide-scope-indefinite}) are based on examples in
+\citet[][p.\ 608, 622]{szabolcsi2000}.
+Example (\ref{ex:np-quantifier}) is based on an example in
+\citet[][p.\ 208]{barker2015}.
+\eenumsentence{\label{ex:scope-ambiguity}
+\item[]\hspace*{-0.5\leftmargin}``Someone read every book.''
+\item$\exists{x}.\PERSON(x)\wedge\forall{y}.\BOOK(y)\supset\READ(x,y)$
+\item$\forall{y}.\BOOK(y)\supset\exists{x}.\PERSON(x)\wedge\READ(x,y)$}%
+\eenumsentence{\label{ex:scope-island}
+\item[]\hspace*{-0.5\leftmargin}``Someone said Kurt wrote every book.''
+\item$\exists{x}.\PERSON(x)\wedge\SAY(x,\forall{y}.\PERSON(y)\supset\WROTE(\KURT,y))$}%
+\eenumsentence{\label{ex:wide-scope-indefinite}
+\item[]\hspace*{-0.5\leftmargin}``Everyone said [Kurt dedicated a book to Mary].''
+\item$\forall{x}.\PERSON(x)\supset\SAY(x,\exists{y}.\BOOK(y)\wedge\DEDICATE(\KURT,\MARY,y))$
+\item$\forall{x}.\PERSON(x)\supset\exists{y}.\BOOK(y)\wedge\SAY(x,\DEDICATE(\KURT,\MARY,y))$
+\item$\exists{y}.\BOOK(y)\wedge\forall{x}.\PERSON(x)\supset\SAY(x,\DEDICATE(\KURT,\MARY,y))$}%
+\eenumsentence{\label{ex:np-quantifier}
+\item[]\hspace*{-0.5\leftmargin}``John read a book [the author of which] feared the ocean.''
+\item$\exists{x}.\BOOK(x)\wedge\FEAR(\iota(\lambda{y}.\OF(y,\AUTHOR,x)),\iota(\OCEAN))\wedge\READ(\JOHN,x)$}
+Example (\ref{ex:scope-ambiguity}) is a canonical example of scope
+ambiguity: there is ambiguity caused by the order in which the
+quantifiers ``someone'' and ``every book'' take scope.
+%
+Example (\ref{ex:scope-island}) demonstrates a scope island:
+there is no reading in which ``every book'' scopes out of the embedded
+clause, as this reading would imply that the speaker made a separate
+speech act for every book: ``Kurt wrote Slaughterhouse-Five'', ``Kurt
+wrote Cat's Cradle'', ``Kurt wrote\ldots''
+%
+Example (\ref{ex:wide-scope-indefinite}) shows that an indefinite
+\emph{can} scope out of a scope island.
+%
+And lastly, example (\ref{ex:np-quantifier}) illustrates the need for
+quantifiers which take scope at non-sentence nodes: ``which'' must take
+scope over ``[$_{\text{NP}}$ the author of \_]'', obtain and insert a
+reference to the book in question, and `move' this entire constituent
+into the subject position of ``\_ the ocean''.
+
+\subsubsection*{\NLLAM, \NLCL}
+\citet{barker2015} develop an extension to the non-associative Lambek
+calculus \citep[NL;][]{lambek1961} which they call \NLCL. The history
+behind this axiomatisation is somewhat intricate, but helpful to
+understanding, so we will briefly go over it. The initial idea comes
+from the practice of encoding quantifier movement as a tree
+transformation which introduces a binder~\citep{heim1998}:
+\begin{center}
+  \begin{minipage}{0.4\linewidth}\centering
+    \begin{tikzpicture}
+      \tikzset{level distance=4ex}
+      \tikzset{sibling distance=0pt}
+      \Tree [ john [ likes everyone ] ]
+    \end{tikzpicture}
+  \end{minipage}%
+  \begin{minipage}{0.05\linewidth}\centering
+    $\longleftrightarrow$
+  \end{minipage}%
+  \begin{minipage}{0.5\linewidth}\centering
+    \begin{tikzpicture}
+      \tikzset{level distance=4ex}
+      \tikzset{sibling distance=0pt}
+      \Tree [ everyone [ $\lambda x.$ [ john [ likes $x$ ] ] ] ]
+    \end{tikzpicture}
+  \end{minipage}
+\end{center}
+To implement this idea, \citeauthor{barker2015} introduced a
+\emph{structural} $\lambda$-construct to NL, and added the following
+structural postulate:
+\begin{align}
+  \tag{$\lambda$}
+  \Sigma[\Gamma] \longleftrightarrow \Gamma\hprod\lambda{x}.\Sigma[x]
+  \label{eqn:lambda}
+\end{align}
+The $\hprod$-connective is part of a new residuated family $\{\himpr,
+\hprod, \himpl\}$, a copy of $\{\impr, \prod, \impl\}$. The
+\eqref{eqn:lambda} postulate allows you to raise any constituent to
+the top-left position, where, if it has the right type, it can be
+resolved against the current top-level type:
+\vspace*{-1\baselineskip}
+\begin{scprooftree}
+  \AXC{$\Sigma[{A}]\fCenter{B}$}
+  \RightLabel{\eqref{eqn:lambda}}
+  \UIC{${A}\hprod\lambda{x}.\Sigma[x]\fCenter{B}$}
+  \RightLabel{R$\himpr$}
+  \UIC{$\lambda{x}.\Sigma[x]\fCenter{A\himpr B}$}
+  \AXC{${C}\fCenter{D}$} \RightLabel{L$\himpl$}
+  \BIC{${C\himpl(A\himpr B)}\hprod\lambda{x}.\Sigma[x]\fCenter{D}$}
+  \RightLabel{\eqref{eqn:lambda}}
+  \UIC{$\Sigma[{C\himpl(A\himpr B)}]\fCenter{D}$}
+\end{scprooftree}
+They call resulting system \NLLAM. However, this system is hard
+to formalise and reason about, largely due to the presence of a
+binding construct in the syntax of structures. For this reason,
+\citet[][ch.\ 17]{barker2015} introduce \NLCL, which uses the fact
+that linear $\lambda$-terms can be translated to combinatory logic
+using a variant of Sch\"onfinkel's mapping and the following
+combinators:\footnote{%
+  The $\lambda$-construct introduced by \eqref{eqn:lambda} is
+  linear. You can easily verify this for yourself.
+}
+\[
+  \I x     = x,
+  \qquad
+  \B x y z = x (y z),
+  \qquad
+  \C x y z = x  z y
+\]
+The resulting system is presented in \autoref{fig:nlcl}.
 
 \input{fig-nlcl}
 
-\input{fig-license}
+\noindent
+In \NLCL, we can do quantifier raising in much the same way as we did
+with the \eqref{eqn:lambda} postulate---although we now have to raise
+the quantifier one step at a time:
+\vspace*{-1\baselineskip}
+\begin{scprooftree}
+  \AXC{$\vdots$}\noLine
+  \UIC{$\textsc{john}\prod\textsc{likes}\prod{np}\fCenter{s}$}
+  \RightLabel{\I}
+  \UIC{$\textsc{john}\prod\textsc{likes}\prod{np}\hprod\I\fCenter{s}$}
+  \RightLabel{\B}
+  \UIC{$\textsc{john}\prod{np}\hprod{(\B\prod\textsc{likes})\prod\I}\fCenter{s}$}
+  \RightLabel{\B}
+  \UIC{${np}\hprod(\B\prod\textsc{john})\prod{(\B\prod\textsc{likes})\prod\I}\fCenter{s}$}
+  \RightLabel{$\himpr R$}
+  \UIC{$(\B\prod\textsc{john})\prod{(\B\prod\textsc{likes})\prod\I}\fCenter{np}\himpr{s}$}
+  \AXC{${s}\fCenter{s}$}
+  \RightLabel{$\himpl L$}
+  \BIC{$\textsc{everyone}\hprod(\B\prod\textsc{john})\prod{(\B\prod\textsc{likes})\prod\I}\fCenter{s}$}
+  \RightLabel{\B}
+  \UIC{$\textsc{john}\prod{\textsc{everyone}}\hprod{(\B\prod\textsc{likes})\prod\I}\fCenter{s}$}
+  \RightLabel{\B}
+  \UIC{$\textsc{john}\prod\textsc{likes}\prod{\textsc{everyone}\hprod\I}\fCenter{s}$}
+  \RightLabel{\I}
+  \UIC{$\textsc{john}\prod\textsc{likes}\prod{\textsc{everyone}}\fCenter{s}$}
+\end{scprooftree}
+We will continue our discussion of the relation between \NLLAM\ and
+\NLCL\ in \autoref{sec:normal-form}. Before then, we will make a first
+contribution: we will show how to extend \NLCL\ with syntactic
+mechanisms to allow for the analysis of scope islands and strong and
+weak quantifiers.
 
+
+
+\section{Syntactic extensions to \NLCL}
+
+\subsubsection*{Scope islands for \NLCL}
+In order to analyse scope islands, we need a method of blocking
+quantifier movement. If you look at the \I\B\C-rules in
+\autoref{fig:nlcl}, you will notice that it allows constituents
+attached to (the left of) a hollow product to move past solid
+products.
+This leads us to suggest a fairly simple solution: insert
+\emph{anything} that is not solid product.
+We use a residuated pair of unary connectives, $\di$ and
+$\sq$~\citep{morrill1994,moortgat1996}.
+The relevant rules are presented in \autoref{fig:scope-islands}.
+
+\input{fig-scope-islands}
+
+\noindent
+Using these connectives, we can assign `said' the type
+$({np}\impr{s})\impl\di{s}$. Instead of taking a sentence-argument
+from the right, `said' now takes a \emph{closed-off} sentence---a
+scope island. Have a look at the derivation for example
+(\ref{ex:scope-island}) given below:
+\begin{scprooftree}
+  \AXC{$\textsc{Kurt}\prod\textsc{wrote}\prod\textsc{every}\prod\textsc{book}\fCenter{s}$}
+  \RightLabel{$\di R$}
+  \UIC{$\langle \textsc{Kurt}\prod\textsc{wrote}\prod\textsc{every}\prod\textsc{book}\rangle \fCenter\di{s}$}
+  \AXC{$\textsc{someone}\prod{({np}\impr{s})}\fCenter{s}$}
+  \BIC{$\textsc{someone}\prod\textsc{said}\prod\langle
+    \textsc{Kurt}\prod\textsc{wrote}\prod\textsc{every}\prod\textsc{book}\rangle\fCenter{s}$}
+\end{scprooftree}
+As long as the scope island (written $\di[\cdot]$) is in place,
+`$\textsc{every}\prod\textsc{book}$' cannot be raised past it. But in
+order to remove the scope island, it has to be eliminated against the
+$\di{s}$ argument of `said', and doing so isolates the embedded clause
+in its own branch of the proof.\footnote{%
+  While the presence of the structural diamond in the endsequent may
+  seem problematic, but recall that from the perspective of
+  backward-chaining search we assign semantics to a \emph{known}
+  sentence structure. If we switch to forward-chaining search, i.e.\ %
+  to parsing, the need for a scope island will be inferred from the
+  type of `said'.
+}
+
+\subsubsection*{A combinator for strong quantifiers}
+One possible solution for analysing weak and strong quantifiers is to
+split the family $\himpr,\hprod,\himpl$ into two separate families,
+$\himpr^w,\hprod^w,\himpl^w$ and $\himpr^s,\hprod^s,\himpl^s$, and
+give both of these access to the \I,\B,\C-rules. We can then add a
+structural rule which allows \emph{strong} quantifiers to move out of
+a scope island:
+\vspace*{-1\baselineskip}
+\begin{center}
+  \begin{scprooftree*}
+    \AXC{$\Sigma[{\di[\Gamma_1\hprod^s\Gamma_2]}]\fCenter\Delta$}
+    \doubleLine\RightLabel{$\I^*$}
+    \UIC{$\Sigma[{\Gamma_2\hprod^s(\I^*\prod\di[\Gamma_1])}]\fCenter\Delta$}
+  \end{scprooftree*}
+\end{center}
+\citet[][ch.\ 17.11]{barker2015} propose a similar construction for
+allowing quantifiers to scope over `$\hprod$' in order to analyse
+sluicing.
+
+We could continue, and split the modality $\di,\sq$ into a strong and
+weak pair as well, and create island from which even strong
+quantifiers cannot escape. However, \citet{szabolcsi2000} writes that
+``indefinites acquire their existential scope in a manner that does
+not involve movement and is essentially syntactically unconstrained.''
+In light of this, it seems unlikely that we will have to extend our
+syntactic solution to include strong scope islands---and our syntactic
+solution to weak versus strong quantifiers seems cumbersome.
+
+
+\section{Continuations and wide-scope indefinites}
+We will delay our discussion of CPS semantics for wide-scope
+indefinites, and first discuss a normal-form for \NLCL, as
+\citepos{moortgat2012} translation depends crucially on it.
+
+\subsubsection*{Normal-form for \NLCL}
+\label{sec:normal-form}
+\citet[][sec. 3.1]{moortgat2012} define a normal-form calculus for the
+Lambek-Grishin (LG) calculus, based on work on focusing by
+\citet{andreoli2001} and \citet{bastenhof2011}.
+Since NL is a fragment of LG, we can extract a normal-form calculus
+for NL from their work. One advantage of the formalism they
+use---display calculus \citep{belnap1982}---is that we can
+more-or-less freely add structural rules.
+\citepos{barker2015} extension of NL, \NLCL, consists solely of a copy
+of an existing modality ($\impr,\prod,\impl$ to $\himpr,\hprod,\himpl$)
+and a number of structural rules. Therefore, by applying these same
+changes, we can extend focused display NL to focused display \NLCL.
+This extension is presented in \autoref{fig:display-nlcl}.
+
+\input{fig-display-nlcl}
+
+The structural rules used in \NLCL are problematic, as the \I-rule
+makes proof search undecidable---after all, we can always introduce
+another \I.
+\citet[][ch.\ 17.6]{barker2015} address this, albeit in a convoluted
+way. They show that \NLLAM\ can be embedded in \NLCL, using a variant
+of Sch\"onfinkel's mapping from $\lambda$-terms to combinatory logic.
+Later, they show that a pair of derived rules, $\himpl{L_{\lambda}}$
+and $\himpr{R_{\lambda}}$, can serve as a normal-form for the
+structural rules of \NLCL. However, these derived rules employ the
+structural $\lambda$ which, in the context of \NLCL, is presumably
+immediately translated using Sch\"onfinkel's mapping.
+Instead of employing this two-step process, we exploit the
+similarities between single-hole contexts and linear $\lambda$-terms
+to derive a variant of the $\lambda$-rule which directly uses
+Sch\"onfinkel's mapping (written $\overline{\cdot}$) \citep[cf.][ch.\ %
+17.5]{barker2015}:
+\[
+  \scalebox{\defscalefactor}{\(
+  \begin{aligned}
+    &\trace{\Box}             \;&&= \I\\
+    &\trace{\Sigma\prod\Gamma}\;&&= ((\C\prod\trace{\Sigma})\prod\Gamma)\\
+    &\trace{\Gamma\prod\Sigma}\;&&= ((\B\prod\Gamma)\prod\trace{\Sigma})
+  \end{aligned}
+  \)}
+  \qquad
+  \begin{scprooftree*}
+    \AXC{$\st{A}\hprod\:\trace{\Sigma}\fCenter\Delta$}
+    \doubleLine\RightLabel{$\uparrow\downarrow$}
+    \UIC{$\Sigma[\st{A}]\fCenter\Delta$}
+  \end{scprooftree*}
+\]
+The $\uparrow\downarrow$-rule is written as $\uparrow$ or $\downarrow$,
+depending on the direction in which it is applied, and is derived by
+induction on the structure of the context $\Sigma$:
+\[
+  \scalebox{\defscalefactor}{$\Box$:}
+  \begin{scprooftree*}
+    \AXC{$\st{A}\hprod\:\I\fCenter\Delta$}
+    \doubleLine\RightLabel{\I}
+    \UIC{$\st{A}\fCenter\Delta$}
+  \end{scprooftree*}
+  \quad
+  \scalebox{\defscalefactor}{$\Sigma\prod\Gamma$:}
+  \begin{scprooftree*}
+    \AXC{$\st{A}\hprod\:((\C\prod\trace{\Sigma})\prod\Gamma)\fCenter\Delta$}
+    \doubleLine\RightLabel{\C}
+    \UIC{$(\st{A}\hprod\:\trace{\Sigma})\prod\Gamma\fCenter\Delta$}
+    \doubleLine\RightLabel{Res$\impl\prod$}
+    \UIC{$\st{A}\hprod\:\trace{\Sigma}\fCenter\Delta\impl\Gamma$}
+    \doubleLine\RightLabel{$\uparrow\downarrow$}
+    \UIC{$\Sigma[\st{A}]\fCenter\Delta\impl\Gamma$}
+    \doubleLine\RightLabel{Res$\impl\prod$}
+    \UIC{$\Sigma[\st{A}]\prod\Gamma\fCenter\Delta$}
+  \end{scprooftree*}
+  \quad
+  \scalebox{\defscalefactor}{$\Gamma\prod\Sigma$:}
+  \begin{scprooftree*}
+    \AXC{$\st{A}\hprod\:((\B\prod\Gamma)\prod\trace{\Sigma})\fCenter\Delta$}
+    \doubleLine\RightLabel{\B}
+    \UIC{$\Gamma\prod(\st{A}\hprod\:\trace{\Sigma})\fCenter\Delta$}
+    \doubleLine\RightLabel{Res$\impr\prod$}
+    \UIC{$\st{A}\hprod\:\trace{\Sigma}\fCenter\Gamma\impr\Delta$}
+    \doubleLine\RightLabel{$\uparrow\downarrow$}
+    \UIC{$\Sigma[\st{A}]\fCenter\Gamma\impr\Delta$}
+    \doubleLine\RightLabel{Res$\impr\prod$}
+    \UIC{$\Gamma\prod\Sigma[\st{A}]\fCenter\Delta$}
+  \end{scprooftree*}
+\]
+Using this derived rule, we can derive variants of the
+$\himpl{L_{\lambda}}$- and $\himpr{R_{\lambda}}$-rules. We name these
+$qL$  and $qR$, to signify that they no longer employ a structural
+$\lambda$, and because they can be composed to implement
+\citepos{moortgat1996} $q$-connective:
+\[
+  \scalebox{\defscalefactor}{$qL$:}
+  \begin{scprooftree*}
+    \AXC{$\trace{\Sigma}\fCenter\fc{\q{A}{B}{}}$}
+    \AXC{$\fc{C}\fCenter\Delta$}
+    \RightLabel{$\himpl L$}
+    \BIC{$\fc{\q{A}{B}{C}}\fCenter\Delta\himpl\trace{\Sigma}$}
+    \RightLabel{Foc$^L$}
+    \UIC{$\st{\q{A}{B}{C}}\fCenter\Delta\himpl\trace{\Sigma}$}
+    \RightLabel{Res$\himpl\hprod$}
+    \UIC{$\st{\q{A}{B}{C}}\hprod\:\trace{\Sigma}\fCenter\Delta$}
+    \RightLabel{$\uparrow$}
+    \UIC{$\Sigma[\st{\q{A}{B}{C}}]\fCenter\Delta$}
+  \end{scprooftree*}
+  \quad
+  \scalebox{\defscalefactor}{$qR$:}
+  \begin{scprooftree*}
+    \AXC{$\Sigma[\st{A}]\fCenter\st{B}$}
+    \RightLabel{$\downarrow$}
+    \UIC{$\st{A}\hprod\:\trace{\Sigma}\fCenter\st{B}$}
+    \RightLabel{Res$\hprod\himpr$}
+    \UIC{$\trace{\Sigma}\fCenter\st{A}\himpr\st{B}$}
+    \RightLabel{$\himpr R$}
+    \UIC{$\trace{\Sigma}\fCenter\st{\q{A}{B}{}}$}
+  \end{scprooftree*}
+\]
+Proof search with the logical and residuation rules for
+$\impr,\prod,\impl$, $\himpr,\hprod,\himpl$ and $\di,\sq$, and the
+derived rules $qL$ and $qR$ is decidable and complete.\footnote{
+  If we want decidable proof search for our axiomatic system, we
+  can restrict access to problematic $\I$-rule to single uses by
+  quantifiers using a license.
+}
+
+\subsubsection*{Continuation semantics for \NLCL}
+\label{sec:continuation-semantics}
+A normal-form calculus for proof search is a great improvement for
+proof search, but the gain we were really after is \citepos[][sec.\ %
+3.1]{moortgat2012} CPS semantics.
+We can trivially restrict their translation to NL, and then extend
+it to cover \NLCL.
+In \autoref{fig:cps-semantics}, we present the translation on types
+and sequents.
+\input{fig-cps-semantics}
+We extend the translation on types to a translation on structures as
+follows: we translate all structural constants (\I,\B,\C) as units,
+forget all unary structural connectives ($\di,\sq$), and translate
+binary structural connectives as products. Atomic structures $\st{A}$
+are translated as $\tr{A}^-$ or $\tr{A}^+$, depending on the polarity
+of the structure $\st{A}$.
+
+In this particular CPS translation, all function applications and
+abstractions are contained within the focusing and unfocusing rules,
+which are translated as follows:
+\begin{center}
+  \begin{scprooftree*}
+    \AXC{$x:\tr{\Delta}\fCenter M:\tr{A}^-$}
+    \RightLabel{Foc$^L$}
+    \UIC{$k:\tr{A}^+\fCenter (\lambda{x}.k\;M):\tr{\Delta}^R$}
+  \end{scprooftree*}
+  \begin{scprooftree*}
+    \AXC{$x:\tr{A}^+\fCenter M:\tr{\Delta}^R$}
+    \RightLabel{Unf$^L$}
+    \UIC{$y:\tr{\Delta}\fCenter (\lambda{x}.M\;y):\tr{A}^-$}
+  \end{scprooftree*}
+  \\[1\baselineskip]
+  \begin{scprooftree*}
+    \AXC{$x:\tr{\Gamma}\fCenter M:\tr{A}^+$}
+    \RightLabel{Foc$^R$}
+    \UIC{$x:\tr{\Gamma}\fCenter (\lambda{k}.k\;M):\tr{A}^{-R}$}
+  \end{scprooftree*}
+  \begin{scprooftree*}
+    \AXC{$x:\tr{\Gamma}\fCenter M:\tr{A}^{-R}$}
+    \RightLabel{Unf$^R$}
+    \UIC{$x:\tr{\Gamma}\fCenter (\lambda{y}.M\;y):\tr{A}^+$}
+  \end{scprooftree*}
+\end{center}
+The other rules are translated either as axioms ($Ax^L,Ax^R$),
+identities ($\impr R,\impl R,\himpr R,\himpl R$ and all rules for
+$\di,\sq$) or permutations (the rest). For instance,
+\begin{scprooftree}
+  \AXC{$x:\tr{\Gamma}\fCenter M:\tr{A}^+$}
+  \AXC{$y:\tr{\Delta}\fCenter N:\tr{B}^-$}
+  \RightLabel{$\impr L$}
+  \BIC{$z:\tr{\Gamma}\times\tr{\Delta}\fCenter(M[\pi_1z/x],N[\pi_2z/y]):\tr{A}^+\times\tr{B}^-$}
+\end{scprooftree}
+Using these semantics, we can assign the indefinite article the type
+$np \impl n$.\footnote{%
+  Quantifiers such as ``someone'' should be assigned the type $np\impl
+  n\otimes n$, which means we must also extend \NLCL with logical
+  products.
+}
+This will result in \emph{two} interpretations for
+(\ref{ex:scope-island}), and \emph{three} interpretations for
+(\ref{ex:wide-scope-indefinite}), as required. Let us consider the
+important steps in the derivation of (\ref{ex:wide-scope-indefinite}):
+\begin{enumerate}
+\item the quantifier movement and scope taking of ``everyone'';
+\item the collapsing of the scope island, isolating the clause
+  ``[$_S$ Kurt .. Mary]'' in its own branch of the derivation;
+\item the collapsing of ``a book'', with the indefinite taking scope
+  at the top-level.
+\end{enumerate}
+If these steps are taken [1,2,3], we obtain interpretation
+(\ref{ex:wide-scope-indefinite}a); if they are taken [1,3,2], we
+obtain (\ref{ex:wide-scope-indefinite}b); and if they are taken
+[3,1,2], we obtain (\ref{ex:wide-scope-indefinite}c).\footnote{%
+  The normal-form requires that 1 occurs before 2, so this list is
+  exhaustive.
+}
+
+\section{Discussion}
+We presented an improvement over \citepos{barker2015} \NLCL\ for which
+derivability is decidable, and which has a normal-form for proof
+search. In addition, it can analyse scope islands, and distinguish
+between strong and weak quantifiers, shown by the ability to analyse
+examples (\ref{ex:scope-ambiguity}-\ref{ex:np-quantifier}).
+Of these examples, (\ref{ex:scope-ambiguity}-\ref{ex:wide-scope-indefinite})
+are representative examples of scope islands and strong and weak
+quantifiers, for which \citet{kiselyov2014} provides a purely semantic
+analysis. The remaining example, (\ref{ex:np-quantifier}), is our
+improvement over their work, and motivated us to start from
+\citepos{barker2015} syntactic approach.
 
 \bibliographystyle{apalike}
 \bibliography{main}
 
 \end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

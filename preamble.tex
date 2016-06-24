@@ -10,28 +10,35 @@
 \addto\extrasenglish{\def\subsectionautorefname{section}}
 \addto\extrasenglish{\def\subsubsectionautorefname{section}}
 
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+
 \usepackage{amsmath,amssymb}
-\usepackage{lmodern}
 \usepackage{stmaryrd}
 \usepackage{comment}
-\usepackage{ifthen}
+\usepackage{xifthen}
 \usepackage{makeidx}
+\usepackage{lingmacros}
+\usepackage[inline]{enumitem}
+\linespread{0.98}
 
 \usepackage{bussproofs}
 \usepackage{graphicx}
 \EnableBpAbbreviations
 \def\fCenter{\mathbin{\vdash}}
-\usepackage{mdframed}
-\newenvironment{scprooftree}[1][1.0]%
+\def\defscalefactor{0.7875}
+\newenvironment{scprooftree}[1][\defscalefactor]%
   {\gdef\scalefactor{#1}\begin{center}\proofSkipAmount \leavevmode}%
   {\scalebox{\scalefactor}{\DisplayProof}\proofSkipAmount \end{center} }
-\newenvironment{scprooftree*}[1][1.0]%
+\newenvironment{scprooftree*}[1][\defscalefactor]%
   {\gdef\scalefactor{#1} \leavevmode\hbox\bgroup}%
   {\scalebox{\scalefactor}{\DisplayProof} \egroup}
 
-\usepackage{natbib}
-\usepackage{etoolbox}
+\usepackage[numbers]{natbib}
+\renewcommand\bibsection
+  {\section*{\refname}\small\renewcommand\bibnumfmt[1]{##1.}}
 \usepackage{xstring}
+\usepackage{etoolbox}
 \makeatletter
 \patchcmd{\NAT@test}{\else \NAT@nm}{\else \NAT@nmfmt{\NAT@nm}}{}{}
 
@@ -49,9 +56,28 @@
     {\NAT@orig@nmfmt{#1's}}}
 \makeatother
 \newcommand{\mathplus}[0]{+}
+\usepackage{keyval}
+\usepackage{usebib}
+
 
 % abbrev.
-\def\NLCL{NL$_{\text{IBC}}$}
+\def\e{\ensuremath{\mathbf{e}}}
+\def\t{\ensuremath{\mathbf{t}}}
+\def\DEDICATE{\ensuremath{\mathbf{dedicate}}}
+\def\PERSON{\ensuremath{\mathbf{person}}}
+\def\AUTHOR{\ensuremath{\mathbf{author}}}
+\def\OCEAN{\ensuremath{\mathbf{ocean}}}
+\def\WROTE{\ensuremath{\mathbf{wrote}}}
+\def\BOOK{\ensuremath{\mathbf{book}}}
+\def\READ{\ensuremath{\mathbf{read}}}
+\def\FEAR{\ensuremath{\mathbf{fear}}}
+\def\KURT{\ensuremath{\mathbf{kurt}}}
+\def\MARY{\ensuremath{\mathbf{mary}}}
+\def\JOHN{\ensuremath{\mathbf{john}}}
+\def\SAY{\ensuremath{\mathbf{say}}}
+\def\OF{\ensuremath{\mathbf{of}}}
+\def\NLLAM{NL$_{\lambda}$}
+\def\NLCL{NL$_{\text{CL}}$}
 \def\I{\ensuremath{\mathbf{I}}}
 \def\B{\ensuremath{\mathbf{B}}}
 \def\C{\ensuremath{\mathbf{C}}}
@@ -59,9 +85,16 @@
 \def\prod{\bullet}
 \def\impr{\backslash}
 \def\impl{\slash}
-\def\hprod{\circ}
+\def\hprod{\mathbin{\circ}}
 \def\himpr{\fatbslash}
-\def\himpl{\fatslash}
+\def\himpl{\mathbin{\!\fatslash\,}}
+\newcommand{\st}[1]{\cdot #1 \cdot}
+\newcommand{\fc}[1]{\boxed{ #1 }}
+\newcommand{\sq}[1][]{\ifthenelse{\isempty{#1}}{\square}{[#1]}}
+\newcommand{\di}[1][]{\ifthenelse{\isempty{#1}}{\lozenge}{\langle #1 \rangle}}
+\newcommand{\tr}[1]{\llbracket #1\rrbracket}
+\newcommand{\trace}[1]{\ensuremath{\overline{#1}}}
+\newcommand{\q}[3]{{#1}\himpl({#1}\himpr{#2})}
 
 % only during writing
 \usepackage{xcolor}
