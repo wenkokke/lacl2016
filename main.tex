@@ -14,81 +14,125 @@
 %  \email{pepijn.kokke@gmail.com}}
 \maketitle
 
-\begin{abstract}
-  We propose an improvement of \citepos{barker2015} {\NLCL} for which
-  derivability is decidable, which has a normal-form for proof search,
-  can analyse scope islands, and distinguish between strong and weak
-  quantifiers.
-\end{abstract}
-
-
 \section{Introduction}\label{sec:introduction}
-In this paper, we examine \citepos{barker2015} {\NLCL}. We discuss an
-extension to their logic, which allows us to analyse scope islands.
-We then propose two extensions which allow us to analyse strong and
-weak quantifiers:
-\begin{enumerate*}[label= (\arabic*)]
-\item a syntactic mechanism, using the encodings of logical
-  combinators in the style of \citet{finger2001} and
-  \citet{barker2015}; and
-\item a \emph{combined} semantic and syntactic mechanism, using the
-  continuation-passing style (CPS) semantics described by
-  \citet{moortgat2012}.
-\end{enumerate*}
-To be able to use their CPS semantics, we develop a focused variant of
-{\NLCL}. An added benefit this is that we solve the problem of spurious
-ambiguity for this calculus. In closing, we briefly compare our solution
-to the purely semantic solution developed by \citet{kiselyov2014}.
 
-\subsubsection*{Linguistic data}\label{sec:linguistic-data}
-We will start out by discussing the linguistic data which motivates
-our extensions to {\NLCL}.
-Examples (\ref{ex:scope-ambiguity}), (\ref{ex:scope-ambiguity}) and
-(\ref{ex:wide-scope-indefinite}) are based on examples in
-\citet[][p.\ 608, 622]{szabolcsi2000}.
-Example (\ref{ex:np-quantifier}) is based on an example in
-\citet[][p.\ 208]{barker2015}.
+In \citeyear{kiselyov2014}, \citet{kiselyov2014} published a
+paper in which they presented an elegant approach to the anaysis of
+various scope-related phenomena using, what they call, the
+continuation hierarchy.
+The phenomena they cover are scope ambiguity, scope islands and strong
+and weak quantifiers.
+They cover these phenomena using a mechanism which works on the
+sentence's \emph{semantics}, independent of whatever form of grammar
+is used.
+
+At around the same time, \citepos{barker2015} published a book
+containing their findings on {\NLLAM} and {\NLCL}, a pair of grammar
+logics, both with the ability to analyse scope ambiguity using a
+strictly \emph{syntactic} mechanism.
+In addition, these logics can analyse ``parastic scope''
+\citep{barker2007,barker2015} and a quantifiers which change the
+result type of the expressions they take scope over.
+However, neither of these logics is capable of analysing scope islands
+or strong and weak quantifiers.
+
+In this paper, we rework {\NLCL} to a calculus which can analyse both
+scope islands and strong and weak quantifiers, without losing
+the ability to analyse parasitic scope or changing result types.
+We base ourselves on work by \citet{moortgat1996} and
+\citet{moortgat2012}. As a bonus, our approach to strong and weak
+quantifiers requires a focusing regime. This results in the elimination
+of spurious ambiguity, and thus greatly enhances the efficiency of
+proof search.
+
+We will start our discussion by giving several examples of each of the
+aforementioned phenomena. The following sentences are examples of scope
+ambiguity, scope islands and weak quantifiers, respectively. They are
+given together with their expected semantics, and are based on
+examples by \citet[][p.\ 608, 622]{szabolcsi2000}.
 \eenumsentence{\label{ex:scope-ambiguity}
-\item[]\hspace*{-0.5\leftmargin}``Someone read every book.''
-\item$\exists{x}.\PERSON(x)\wedge\forall{y}.\BOOK(y)\supset\READ(x,y)$
-\item$\forall{y}.\BOOK(y)\supset\exists{x}.\PERSON(x)\wedge\READ(x,y)$}%
+\item[]\hspace*{-0.5\leftmargin}%
+  ``Someone read every book.''
+\item%
+  \(
+  \exists{x}.\PERSON(x)\wedge\forall{y}.\BOOK(y)\supset\READ(x,y)
+  \)
+\item%
+  \(
+  \forall{y}.\BOOK(y)\supset\exists{x}.\PERSON(x)\wedge\READ(x,y)
+  \)}
 \eenumsentence{\label{ex:scope-island}
-\item[]\hspace*{-0.5\leftmargin}``Someone said Kurt wrote every book.''
-\item$\exists{x}.\PERSON(x)\wedge\SAY(x,\forall{y}.\BOOK(y)\supset\WROTE(\KURT,y))$}%
-\eenumsentence{\label{ex:wide-scope-indefinite}
-\item[]\hspace*{-0.5\leftmargin}``Everyone said [Kurt dedicated a book to Mary].''
-\item$\forall{x}.\PERSON(x)\supset\SAY(x,\exists{y}.\BOOK(y)\wedge\DEDICATE(\KURT,\MARY,y))$
-\item$\forall{x}.\PERSON(x)\supset\exists{y}.\BOOK(y)\wedge\SAY(x,\DEDICATE(\KURT,\MARY,y))$
-\item$\exists{y}.\BOOK(y)\wedge\forall{x}.\PERSON(x)\supset\SAY(x,\DEDICATE(\KURT,\MARY,y))$}%
-\eenumsentence{\label{ex:np-quantifier}
-\item[]\hspace*{-0.5\leftmargin}``John read a book [the author of which] feared the ocean.''
-\item$\exists{x}.\BOOK(x)\wedge\FEAR(\iota(\lambda{y}.\OF(y,\AUTHOR,x)),\iota(\OCEAN))\wedge\READ(\JOHN,x)$}
-Example (\ref{ex:scope-ambiguity}) is the canonical example of scope
-ambiguity: there is ambiguity caused by the order in which the
-quantifiers ``someone'' and ``every book'' take scope.
+\item[]\hspace*{-0.5\leftmargin}%
+  ``Someone said Kurt wrote every book.''
+\item%
+  \(
+  \exists{x}.\PERSON(x)\wedge\SAY(x,\forall{y}.\BOOK(y)\supset\WROTE(\KURT,y))
+  \)}
+\eenumsentence{\label{ex:weak-quantifier}
+\item[]\hspace*{-0.5\leftmargin}%
+  ``Everyone said [Kurt dedicated a book to Mary].''
+\item%
+  \(
+  \forall{x}.\PERSON(x)\supset\SAY(x,\exists{y}.\BOOK(y)
+  \wedge\DEDICATE(\KURT,\MARY,y))
+  \)
+\item%
+  \(
+  \forall{x}.\PERSON(x)\supset\exists{y}.\BOOK(y)
+  \wedge\SAY(x,\DEDICATE(\KURT,\MARY,y))
+  \)
+\item%
+  \(
+  \exists{y}.\BOOK(y)
+  \wedge\forall{x}.\PERSON(x)\supset\SAY(x,\DEDICATE(\KURT,\MARY,y))
+  \)}
+The first of these examples is a canonical example of scope
+ambiguity.
 %
-Example (\ref{ex:scope-island}) demonstrates a scope island:
-there is no reading in which ``every book'' scopes out of the embedded
-clause, as this reading would imply that the speaker made a separate
-speech act for every book: ``Kurt wrote Slaughterhouse-Five'', ``Kurt
-wrote Cat's Cradle'', ``Kurt wrote\ldots''
+Example (\ref{ex:scope-island}) demonstrates a scope
+island: there is no reading in which ``every book'' scopes out of the
+embedded clause, as this reading would imply that the speaker made a
+separate speech act for every book: ``Kurt wrote
+Slaughterhouse-Five'', ``Kurt wrote Cat's Cradle'', ``Kurt
+wrote\ldots''
 %
-Example (\ref{ex:wide-scope-indefinite}) shows that indefinites
-\emph{can} scope out of scope islands.
-%
-Lastly, example (\ref{ex:np-quantifier}) illustrates the need for
-quantifiers which can take scope at non-sentence nodes: ``which'' must
-take scope over ``[$_{\text{NP}}$ the author of \_]'', obtain and
-insert a reference to the book in question, and `move' this entire
-constituent into the subject position of ``\_ the ocean''.
+Finally, example (\ref{ex:weak-quantifier}) shows that
+indefinites \emph{can} scope out of scope islands.
 
-\subsubsection*{{\NLLAM}, {\NLCL}}
-\citet{barker2015} develop an extension to the non-associative Lambek
-calculus \citep[NL;][]{lambek1961} which they call {\NLCL}. The history
-behind this axiomatisation is somewhat intricate, but helpful to
-understanding, so we will briefly go over it. The initial idea comes
-from the practice of encoding quantifier movement as a tree
-transformation which introduces a binder~\citep{heim1998}:
+We add two more sentences, which are examples of a quantifier which
+changes the result type, and of parasitic scope, respectively. These
+examples based on those given by \citepos[][p.\ 208]{barker2015} and
+\citet{kiselyov2015b}.
+\eenumsentence{\label{ex:changing-result-type}
+\item[]\hspace*{-0.5\leftmargin}%
+  ``John read a book [the author of which] feared the ocean.''
+\item%
+  \(
+  \exists{x}.\BOOK(x)
+  \wedge\FEAR(\iota(\lambda{y}.\OF(y,\AUTHOR,x)),\iota(\OCEAN))
+  \wedge\READ(\JOHN,x)
+  \)}
+\eenumsentence{\label{ex:parasitic-scope}
+\item[]\hspace*{-0.5\leftmargin}%
+  ``Everyone feared the same ocean.''
+\item%
+  \(
+  \exists{z}.\forall{y}.\FEAR(y,\iota(\lambda{x}.\OCEAN(x)\wedge{x=z}))
+  \)}
+These last two examples will play a less important role, as {\NLCL} is
+already capable of analysing both. However, in order to demonstrate
+that we have not lost that capability, we will provide analyses of
+both near the end of this paper.
+
+\section{Background}
+In this section, we will briefly discuss {\NLCL} and its sibling,
+{\NLLAM}. {\NLCL} is an extension to the non-associative Lambek
+calculus \citep[NL;][]{lambek1961}.
+The history behind {\NLCL} is somewhat intricate, but helpful to
+understanding, so we will briefly go over it.
+The initial idea comes from the practice of encoding quantifier
+movement as a tree transformation which introduces a
+binder~\citep{heim1998}:
 \begin{center}
   \begin{minipage}{0.4\linewidth}\centering
     \begin{tikzpicture}
@@ -120,13 +164,15 @@ and added the following structural postulate:\footnote{%
   \Sigma[\Gamma] \longleftrightarrow \Gamma\hprod\lambda{x}.\Sigma[x]
   \label{eqn:lambda}
 \end{align}
-The $\hprod$-connective is part of a new residuated family $\{\himpr,
-\hprod, \himpl\}$, which starts out as a copy of $\{\impr, \prod,
-\impl\}$. However, the addition of the~\eqref{eqn:lambda} postulate
-allows you to raise any constituent to the top-left position,
+As can be seen, the~\eqref{eqn:lambda} postulate uses a new
+connective: the $\hprod$ (hollow product).
+This connective is part of a new residuated family $\{\himpr, \hprod,
+\himpl\}$, which starts out as a copy of $\{\impr, \prod,
+\impl\}$.
+However, the addition of the~\eqref{eqn:lambda} postulate allows you
+to raise any constituent to the top-left position in the structure,
 where---if it has the right type---it can be ``resolved'' against the
 top-level type as follows:
-\vspace*{-1\baselineskip}
 \begin{scprooftree}
   \AXC{$\Sigma[{A}]\fCenter{B}$}
   \RightLabel{\eqref{eqn:lambda}}
@@ -139,23 +185,30 @@ top-level type as follows:
   \UIC{$\Sigma[{C\himpl(A\himpr B)}]\fCenter{D}$}
 \end{scprooftree}
 \citeauthor{barker2015} call resulting system {\NLLAM}.
-While {\NLLAM} fulfils the promise of a syntactic analysis of
-quantifier raising, it has some problems. Most notably, it is hard to
-formalise and reason about, largely due to the presence of a binding
-construct in the syntax of structures. While not impossible to
-formalise, the~\eqref{eqn:lambda} postulate greatly complicates the
-proofs.
+While {\NLLAM} fulfils the promise of allowing a syntactic analysis of
+quantifier raising, scope ambiguity and parasitic scope, it has some
+problems.
+Most notably, the system is hard to formalise and to reason about,
+largely due to the presence of a binding construct in the syntax of
+structures.
+While it is not impossible to formalise, the~\eqref{eqn:lambda}
+postulate greatly complicates meta-logical proofs.
 
 To address this issue, and to ease their own investigation of the
 formal properties of {\NLLAM}, \citet[][ch.\ 17]{barker2015} introduce
-{\NLCL}. This system uses the fact that $\lambda$-terms can be
-represented as combinators in combinatory logic, which removes the
-need for a binding construct.
+{\NLCL}.
+This system uses the fact that $\lambda$-terms can be represented as
+combinators in combinatory logic, which removes the need for a binding
+construct.
 \citeauthor{barker2015} use a variant of Sch\"onfinkel's mapping to
 encode the \emph{linear} $\lambda$-construct as applications of the
 combinators $\I$, $\B$ and $\C$:\footnote{%
   One can easily verify that the $\lambda$-construct introduced
-  by~\eqref{eqn:lambda} is indeed linear.
+  by~\eqref{eqn:lambda} is linear.
+}\footnote{%
+  When comparing these equations to the \I\B\C-rules in
+  \autoref{fig:nlcl}, note that $\prod$ encodes function application,
+  but $\hprod$ encodes \emph{flipped} function application.
 }
 \[
   \I x     = x,
@@ -166,21 +219,16 @@ combinators $\I$, $\B$ and $\C$:\footnote{%
 \]
 The resulting system is presented in \autoref{fig:nlcl}.\footnote{%
   In \autoref{fig:nlcl}, and for the remainder of this paper, the
-  letter $\Gamma$ is reserved for structures, whereas the $\Sigma$
-  is used for contexts.
-} When reading this figure, be wary of the difference between the
-combinators $\B,\C$ and the formulas $B,C$. Furthermore, when
-comparing the above equations to the $\I\B\C$-rules below, note that
-$\prod$ encodes a function application, but $\hprod$ encodes a
-\emph{flipped} function application.
+  letters $\Gamma$ and $\Delta$ are reserved for structures, whereas
+  the $\Sigma$ is used for contexts.
+}
 
 \input{fig-nlcl}
 
-\noindent
-In {\NLCL}, we can do quantifier raising in much the same way as we did
-with the~\eqref{eqn:lambda} postulate---although we now have to raise
-the quantifier one step at a time, resulting in much more verbose proofs:
-
+Using the system in \autoref{fig:nlcl}, we can do quantifier raising
+in much the same way as we did with the~\eqref{eqn:lambda}
+postulate---although, as we now have to raise the quantifier one step
+at a time, the proofs are much longer:
 \begin{scprooftree}
   \AXC{$\vdots$}\noLine%
   \UIC{$\textsc{john}\prod\textsc{likes}\prod{np}\fCenter{s}$}
@@ -202,23 +250,28 @@ the quantifier one step at a time, resulting in much more verbose proofs:
   \RightLabel{\I}
   \UIC{$\textsc{john}\prod\textsc{likes}\prod{\textsc{everyone}}\fCenter{s}$}
 \end{scprooftree}
-For a more detailed account of the relation between {\NLLAM} and
-{\NLCL}, see \citet{barker2015}.
+The labels \textsc{john}, \textsc{likes} and \textsc{everyone}
+abbreviate the types ${np}$, $({np}\impr{s})\impl{np}$ and
+${s}\himpl({np}\himpr{s})$, respectively. For a more detailed account
+of the relation between {\NLLAM} and {\NLCL}, see \citet{barker2015}.
+For a more detailed account of various encodings of combinatorial
+logic in structural rules, amongst which the encoding of the linear
+lambda construct used by \citeauthor{barker2015}, see
+\citet{finger2001}.
 
 
 \section{Scope islands for {\NLCL}}
 Our aim for this section is to present an extension to {\NLCL} which
-enables us to give the analysis of example (\ref{ex:scope-island})
-which was presented in \autoref{sec:linguistic-data}. In other words,
-we would like to be able to analyse scope islands.
+will allow us to analyse scope islands, and therefore example
+(\ref{ex:scope-island}).
 
 To analyse scope islands, we need some way to block quantifier
 movement. If you look at the \I\B\C-rules in \autoref{fig:nlcl}, you
-will notice that it allows constituents attached to (the left of) a
+will notice that they allow constituents attached to (the left of) a
 hollow product to move past solid products.
-This leads us to suggest a fairly simple solution: insert
-\emph{anything} that is not solid product.
-We use a residuated pair of unary connectives, $\di$ and
+This leads us to suggest a fairly simple solution:
+insert \emph{anything} that is not solid product.
+For this, we use a residuated pair of unary connectives, $\di$ and
 $\sq$~\citep{morrill1994,moortgat1996}.
 The relevant rules are presented in \autoref{fig:scope-islands}.
 
@@ -231,19 +284,25 @@ from the right, `said' now takes a \emph{closed-off} sentence---a
 scope island. Have a look at the derivation for example
 (\ref{ex:scope-island}) given below:
 \begin{scprooftree}
-  \AXC{$\textsc{Kurt}\prod\textsc{wrote}\prod\textsc{every}\prod\textsc{book}\fCenter{s}$}
+  \AXC{$\vdots$}\noLine%
+  \UIC{$\textsc{Kurt}\prod\textsc{wrote}\prod\textsc{every}
+    \prod\textsc{book}\fCenter{s}$}
   \RightLabel{$\di R$}
-  \UIC{$\langle \textsc{Kurt}\prod\textsc{wrote}\prod\textsc{every}\prod\textsc{book}\rangle \fCenter\di{s}$}
-  \AXC{$\textsc{someone}\prod{({np}\impr{s})}\fCenter{s}$}
+  \UIC{$\langle \textsc{Kurt}\prod\textsc{wrote}\prod
+    \textsc{every}\prod\textsc{book}\rangle \fCenter\di{s}$}
+  \AXC{$\vdots$}\noLine%
+  \UIC{$\textsc{someone}\prod{({np}\impr{s})}\fCenter{s}$}
   \RightLabel{$\impl L$}
   \BIC{$\textsc{someone}\prod\textsc{said}\prod\langle
-    \textsc{Kurt}\prod\textsc{wrote}\prod\textsc{every}\prod\textsc{book}\rangle\fCenter{s}$}
+    \textsc{Kurt}\prod\textsc{wrote}\prod\textsc{every}\prod
+    \textsc{book}\rangle\fCenter{s}$}
 \end{scprooftree}
 As long as the scope island (written $\di[\cdot]$) is in place,
-`$\textsc{every}\prod\textsc{book}$' cannot be raised past it. But in
-order to remove the scope island, it has to be eliminated against the
-$\di{s}$ argument of `said', and doing so isolates the embedded clause
-in its own branch of the proof.\footnote{%
+`$\textsc{every}\prod\textsc{book}$' cannot be raised past it, for
+there is no rule which allows anything to move past a diamond.
+But in order to remove the scope island, it has to be eliminated
+against the $\di{s}$ argument of `said', and doing so isolates the
+embedded clause in its own branch of the proof.\footnote{%
   The presence of the structural diamond in the endsequent
   may seem problematic, but recall that from the perspective of
   backward-chaining search we assign semantics to a \emph{known}
@@ -252,37 +311,79 @@ in its own branch of the proof.\footnote{%
   type of `said'.
 }
 
-\subsubsection*{A combinator for strong quantifiers}
-One possible solution for analysing weak and strong quantifiers is to
-split the family $\himpr,\hprod,\himpl$ into two separate families,
-$\himpr^w,\hprod^w,\himpl^w$ and $\himpr^s,\hprod^s,\himpl^s$, and
-give both of these access to the \I\B\C-rules. We can then add a
-structural rule which allows \emph{strong} quantifiers to move out of
-a scope island:
-\vspace*{-1\baselineskip}
-\begin{center}
-  \begin{scprooftree*}
-    \AXC{$\Sigma[{\di[\Gamma_1\hprod^s\Gamma_2]}]\fCenter\Delta$}
-    \doubleLine\RightLabel{$\I^*$}
-    \UIC{$\Sigma[{\Gamma_2\hprod^s(\I^*\prod\di[\Gamma_1])}]\fCenter\Delta$}
-  \end{scprooftree*}
-\end{center}
-\citet[][ch.\ 17.11]{barker2015} propose a similar construction for
-allowing quantifiers to scope over `$\hprod$' in order to analyse
-sluicing.
+\section{Strong and weak quantifiers}
+\label{sec:strong-and-weak}
 
-We could continue, and split the modality $\di,\sq$ into a strong and
-weak pair as well, and create island from which even strong
-quantifiers cannot escape. However, \citet{szabolcsi2000} writes that
-``indefinites acquire their existential scope in a manner that does
-not involve movement and is essentially syntactically unconstrained.''
-In light of this, it seems unlikely that we will have to extend our
-syntactic solution to include strong scope islands---and our syntactic
-solution to weak versus strong quantifiers seems cumbersome.
+In the previous section, we presented an extension to {\NLCL} which
+enabled us to analyse scope islands.
+This extension blocks all quantifier movement out of scope islands.
+Example (\ref{ex:weak-quantifier}) demonstrates that this is too coarse
+an approach.
+Specifically, we would like to allow weak quantifiers, such as
+indefinites, to scope out of scope islands.
 
+We could approach this issue as a syntactic problem, and encode it
+using structural rules, as we did with quantifier movement and scope
+islands.\footnote{%
+  For instance, we could split the family $\himpr, \hprod, \himpl$
+  into two separate families, $\himpr^w, \hprod^w, \himpl^w$ and
+  $\himpr^s, \hprod^s, \himpl^s$, each with their own copies of the
+  \I\B\C-rules, and add a structural rule which selectively allows
+  weak quantifiers to move past scope islands.}
+However, \citet{szabolcsi2000} writes that ``indefinites acquire their
+existential scope in a manner that does not involve movement and is
+essentially syntactically unconstrained.''
+Therefore, we feel that a syntactic approach would be out of place.
 
-\section{Normal-form for {\NLCL}}
+How do we approach the problem of weak quantifiers as a semantic
+problem? The solution is to use continuation-passing style (CPS).
+But how? Early attempts, such as the work by \citep{barker2002},
+often works by applying a CPS translation directly to the semantic
+terms. Such approaches, however, face a fundamental dilemma.
+Because the CPS translation is applied to a solitary semantic term,
+a deterministic translation cannot introduce scope ambiguity---or any
+ambiguity, for that matter.
+However, making the CPS translation sufficiently nondeterministic
+without causing spurious ambiguity is an arduous task. When
+\citeauthor{barker2002} makes the translation ambiguous, in order to
+capture scope ambiguity, this leads to the number of introduced
+ambigous interpretations growing exponentially with the sentence
+length.
+More recent approaches, such as the work by \citet{kiselyov2014}, are
+much more sophisticated. Their approach allows for the creation of
+quantifiers of different strengths (e.g.\ $\text{everyone}_1$,
+$\text{everyone}_2$, etcetera), essentially reducing scope ambiguity
+to lexical ambiguity. As a linguistic statement, this feels wrong. In
+addition, as their framework was engineered to be able to analyse,
+semantically, phenomena such as scope islands and weak quantifiers, it
+seems overly complex the task at hand.
+
+%%% THIS IS WHERE I STOPPED!
+
+In this paper, we base our CPS semantics on the approach of
+\citet{moortgat2012} and \citet{bastenhof2013}, who elegantly
+integrate the CPS semantics into the grammar logic itself.
+\citeauthor{moortgat2012} set up a calculus which enforces two
+crucial properties:
+\begin{enumerate}
+\item%
+  each proof in the grammar logic is associated with different
+  semantics; and
+\item%
+  the semantics under CPS translation are in normal form.
+\end{enumerate}
+Basically, this means that each semantic interpretation is the CPS
+translation of exactly one proof, and that each proof translates to
+exactly one interpretation---the grammar logic is a normal-form
+calculus with respect to the normal form of the CPS semantics.%
+\footnote{%
+  Note that this normal-form property holds only with respect to the
+  semantics \emph{before} lexical substitution.
+}
+
+\subsubsection{Normal-form for display {\NLCL}}%
 \label{sec:normal-form}
+
 \citet[][sec. 3.1]{moortgat2012} define a normal-form calculus for the
 Lambek-Grishin (LG) calculus, based on work on focusing by
 \citet{andreoli2001} and \citet{bastenhof2011}.
@@ -296,7 +397,7 @@ and a number of structural rules. Therefore, by applying these same
 changes, we can extend focused display NL to focused display {\NLCL}.
 This extension is presented in \autoref{fig:display-nlcl}.
 
-\input{fig-display-nlcl}
+\input{fig-focused-nlcl}
 
 The structural rules used in {\NLCL} are problematic, as the \I-rule
 makes proof search undecidable---after all, we can always introduce
@@ -399,15 +500,21 @@ $\lambda$, and because they can be composed to implement
 \]
 Proof search with the logical and residuation rules for
 $\impr,\prod,\impl$, $\himpr,\hprod,\himpl$ and $\di,\sq$, and the
-derived rules $qL$ and $qR$ is decidable and complete.\footnote{
+derived rules $qL$ and $qR$ is decidable, as this system has both the
+subformula and substructure properties.\footnote{%
   If we want decidable proof search for our axiomatic system, we
   can restrict access to problematic $\I$-rule to single uses by
   quantifiers using a license.
 }
+If we are willing to assume that the $\himpr,\himpl$-connectives only
+occur in syntactic categories as part of the larger quantifier
+construction ${C}\himpl({A}\himpr{B})$, then this system is also
+complete with
+respect to our axiomatic system.
 
-\section{Continuations and wide-scope indefinites}
-\subsubsection*{Continuation semantics for {\NLCL}}
-\label{sec:continuation-semantics}
+\subsubsection{Continuation semantics for {\NLCL}}%
+\label{sec:continuation-semantics-2}
+
 A normal-form calculus for proof search is a great improvement for
 proof search, but the gain we were really after is \citepos[][sec.\ %
 3.1]{moortgat2012} CPS semantics.
