@@ -9,3 +9,4 @@ dungeons
 *.pdf
 .shake.database
 _build/
+.shake

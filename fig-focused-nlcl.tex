@@ -159,6 +159,23 @@
 
   \vspace*{1\baselineskip}
   \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter\Delta$}
+    \doubleLine\RightLabel{$\I$}
+    \UIC{$\Gamma\hprod\I\fCenter\Delta$}
+  \end{scprooftree*}
+  \begin{scprooftree*}
+    \AXC{$\Gamma_1\prod(\Gamma_2\hprod\Gamma_3)\fCenter\Delta$}
+    \doubleLine\RightLabel{$\B$}
+    \UIC{$\Gamma_2\hprod((\B\prod\Gamma_1)\prod\Gamma_3)\fCenter\Delta$}
+  \end{scprooftree*}
+  \begin{scprooftree*}
+    \AXC{$(\Gamma_1\hprod\Gamma_2)\prod\Gamma_3\fCenter\Delta$}
+    \doubleLine\RightLabel{$\C$}
+    \UIC{$\Gamma_1\hprod((\C\prod\Gamma_2)\prod\Gamma_3)\fCenter\Delta$}
+  \end{scprooftree*}
+
+  \vspace*{1\baselineskip}
+  \begin{scprooftree*}
     \AXC{$\di[\st{A}]\fCenter\Delta$}
     \RightLabel{$\di L$}
     \UIC{$\st{\di A}\fCenter\Delta$}
@@ -182,23 +199,6 @@
     \AXC{$\Gamma\fCenter[\Delta]$}
     \doubleLine\RightLabel{Res$\sq\di$}
     \UIC{$\di[\Gamma]\fCenter\Delta$}
-  \end{scprooftree*}
-
-  \vspace*{1\baselineskip}
-  \begin{scprooftree*}
-    \AXC{$\Gamma\fCenter\Delta$}
-    \doubleLine\RightLabel{$\I$}
-    \UIC{$\Gamma\hprod\I\fCenter\Delta$}
-  \end{scprooftree*}
-  \begin{scprooftree*}
-    \AXC{$\Gamma_1\prod(\Gamma_2\hprod\Gamma_3)\fCenter\Delta$}
-    \doubleLine\RightLabel{$\B$}
-    \UIC{$\Gamma_2\hprod((\B\prod\Gamma_1)\prod\Gamma_3)\fCenter\Delta$}
-  \end{scprooftree*}
-  \begin{scprooftree*}
-    \AXC{$(\Gamma_1\hprod\Gamma_2)\prod\Gamma_3\fCenter\Delta$}
-    \doubleLine\RightLabel{$\C$}
-    \UIC{$\Gamma_1\hprod((\C\prod\Gamma_2)\prod\Gamma_3)\fCenter\Delta$}
   \end{scprooftree*}
 
   \caption{{\NLCL} reworked as a focused display calculus.}

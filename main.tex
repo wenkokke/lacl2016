@@ -39,11 +39,11 @@ or strong and weak quantifiers.
 In this paper, we rework {\NLCL} to a calculus which can analyse both
 scope islands and strong and weak quantifiers, without losing
 the ability to analyse parasitic scope or changing result types.
-We base ourselves on work by \citet{moortgat1996} and
-\citet{moortgat2012}. As a bonus, our approach to strong and weak
-quantifiers requires a focusing regime. This results in the elimination
-of spurious ambiguity, and thus greatly enhances the efficiency of
-proof search.
+For this, we base ourselves on work by \citet{moortgat1996} and
+\citet{moortgat2012}. As a bonus, their approach requires a strict
+focusing regime. Therefore, adopting it results in the elimination of
+spurious ambiguity, and greatly enhances the efficiency of proof
+search when compared to \citepos{barker2015} {\NLCL}.
 
 We will start our discussion by giving several examples of each of the
 aforementioned phenomena. The following sentences are examples of scope
@@ -261,6 +261,8 @@ lambda construct used by \citeauthor{barker2015}, see
 
 
 \section{Scope islands for {\NLCL}}
+\label{sec:scope-islands}
+
 Our aim for this section is to present an extension to {\NLCL} which
 will allow us to analyse scope islands, and therefore example
 (\ref{ex:scope-island}).
@@ -352,56 +354,104 @@ length.
 More recent approaches, such as the work by \citet{kiselyov2014}, are
 much more sophisticated. Their approach allows for the creation of
 quantifiers of different strengths (e.g.\ $\text{everyone}_1$,
-$\text{everyone}_2$, etcetera), essentially reducing scope ambiguity
-to lexical ambiguity. As a linguistic statement, this feels wrong. In
-addition, as their framework was engineered to be able to analyse,
-semantically, phenomena such as scope islands and weak quantifiers, it
-seems overly complex the task at hand.
+$\text{everyone}_2$, \dots) essentially reducing scope ambiguity
+to lexical ambiguity. As a linguistic standpoint, this feels wrong.
+Furthermore, their framework was engineered to be able to analyse
+phenomena such as scope islands and weak quantifiers.
+This makes it too expressive (and intricate) for the task at hand.
 
-%%% THIS IS WHERE I STOPPED!
+Instead, we base our CPS semantics on the approach of
+\citet{moortgat2012} and \citet{bastenhof2013}, who manage to
+elegantly integrate CPS semantics into their grammar logic.
+\citeauthor{moortgat2012} set up a calculus which enforces
+one crucial property: every proof in the grammar logic is associated
+with \emph{unique, normal-form semantics}.
+In the context of scope ambiguity, this means that each way to
+interpret a sentence with ambiguous scope corresponds to exactly one
+proof in the grammar logic.
 
-In this paper, we base our CPS semantics on the approach of
-\citet{moortgat2012} and \citet{bastenhof2013}, who elegantly
-integrate the CPS semantics into the grammar logic itself.
-\citeauthor{moortgat2012} set up a calculus which enforces two
-crucial properties:
-\begin{enumerate}
-\item%
-  each proof in the grammar logic is associated with different
-  semantics; and
-\item%
-  the semantics under CPS translation are in normal form.
-\end{enumerate}
-Basically, this means that each semantic interpretation is the CPS
-translation of exactly one proof, and that each proof translates to
-exactly one interpretation---the grammar logic is a normal-form
-calculus with respect to the normal form of the CPS semantics.%
-\footnote{%
-  Note that this normal-form property holds only with respect to the
-  semantics \emph{before} lexical substitution.
-}
-
-\subsubsection{Normal-form for display {\NLCL}}%
+\subsubsection{Focused {\NLCL}}%
 \label{sec:normal-form}
 
 \citet[][sec. 3.1]{moortgat2012} define a normal-form calculus for the
-Lambek-Grishin (LG) calculus, based on work on focusing by
-\citet{andreoli2001} and \citet{bastenhof2011}.
-Since NL is a fragment of LG, we can extract a normal-form calculus
-for NL from their work. One advantage of the formalism they
-use---display calculus \citep{belnap1982}---is that we can
-more-or-less freely add structural rules.
+Lambek-Grishin calculus (LG).
+They refer to this calculus as fLG---for \emph{focused} LG, after
+the technique, pioneered by \citet{andreoli2001}, which
+they use in their calculus.
+As NL is a fragment of LG, we can trivially extract a normal-form
+calculus for NL from their work.
+We will, in their style, refer to this calculus as fNL.
+
+It is important to note that they develop their calculus within the
+framework of display calculus \citep{belnap1982}.
+One advantage of this framework is that we can freely add structural
+rules, without fear that we will lose the cut-elimination property.
 \citepos{barker2015} extension of NL, {\NLCL}, consists solely of a copy
-of an existing modality ($\impr,\prod,\impl$ to $\himpr,\hprod,\himpl$)
-and a number of structural rules. Therefore, by applying these same
-changes, we can extend focused display NL to focused display {\NLCL}.
-This extension is presented in \autoref{fig:display-nlcl}.
+of an existing modality ($\himpr,\hprod,\himpl$) and a number of
+structural rules.
+Therefore, by applying these same changes, we can extend fNL to focsed
+{\NLCL}---or {f\NLCL}.
+The result is presented in \autoref{fig:focused-nlcl},
+together with the focused version of the extension for scope islands
+from \autoref{sec:scope-islands}.
 
 \input{fig-focused-nlcl}
 
-The structural rules used in {\NLCL} are problematic, as the \I-rule
-makes proof search undecidable---after all, we can always introduce
-another \I.
+Equivalence between {f\NLCL} and {\NLCL} can likely be proven using
+an intermediate system: display {\NLCL}. One can trivially obtain this
+system from the focused system in \autoref{fig:focused-nlcl} by
+dropping the focus marker ``$\,\fc{\phantom{\cdot}}\,$'' and the
+focusing and unfocusing rules.
+Equivalence between the display and focused variants of a system was
+proven for classical NL by \citet{bastenhof2011}.
+This proof can likely be adapted for {\NLCL}.
+
+% TODO: add reference for proof of equivalence between display NLCL
+% and the sequent calculus of NLCL
+
+However, it is important to realise that, even in the absence of a
+formal proof of equivalence between {\NLCL} and {f\NLCL}, the second
+remains a logical system which can analyse all phenomena which
+\citet{barker2015} show {\NLCL} can analyse.\footnote{%
+  Throughout the remainder of the paper, whenever we discuss one of
+  the phenomena discussed in \autoref{sec:introduction}, we will give
+  an example proof in {f\NLCL}. In this way, by the end of this paper,
+  this claim will be backed up by evidence.
+}
+
+\subsubsection{Decidable proof search}%
+\label{sec:decidable-proof-search}
+
+At this point, {f\NLCL} still has a problem, which it shares with
+{\NLCL}: it does not have decidable proof search.
+Since it is a grammar logic, this means that \emph{parsing} is not
+decidable.
+The cause of this is the \I-rule, which does not obey the substructure
+property.\footnote{%
+  In the case of {\NLCL}, this is the subformula property.
+}
+
+Admittedly, there are other rules which do not obey the substructure
+property: the residuation rules and the {\B} and {\C} rules do not
+enjoy it.
+However, the residuation rules still enjoy a weak form this property:
+they \emph{do not increase} the size of the structure.
+This means that we can use loop checking to filter out problematic
+branches of the search.
+%
+More interestingly, the {\B} and {\C} rules have the property that
+``whatever goes up, must come down.'' At some point, the quantifier
+will reach the top of the expression, and at that point, there are
+only two things to do:
+\begin{enumerate*}[label= (\arabic*)]
+\item resolve the quantifier against the top-level type, thereby
+  \emph{eliminating} a connective and breaking out of any loop; or
+\item go back down along the same path.
+\end{enumerate*}
+%
+Yet when searching for a proof with the \I-rule, we can always
+introduce another \I.
+
 \citet[][ch.\ 17.6]{barker2015} address this, albeit in a convoluted
 way. They show that {\NLLAM} can be embedded in {\NLCL}, using a variant
 of Sch\"onfinkel's mapping from $\lambda$-terms to combinatory logic.
@@ -430,9 +480,13 @@ Sch\"onfinkel's mapping (written $\overline{\cdot}$) \citep[cf.][ch.\ %
     \UIC{$\Sigma[\st{A}]\fCenter\Delta$}
   \end{scprooftree*}
 \]
-The $\uparrow\downarrow$-rule is written as $\uparrow$ or $\downarrow$,
-depending on the direction in which it is applied, and is derived by
-induction on the structure of the context $\Sigma$:
+We can use this mapping in the definition of a derived rule: the
+$\uparrow\downarrow$-rule, written as $\uparrow$ or $\downarrow$,
+depending on the direction in which it is applied.\footnote{%
+  These correspond to \citepos[][p.\ 201]{barker2015}
+  \textsc{expansion} and \textsc{reduction} rules, respectively.
+}
+It can be derived by induction on the structure of the context $\Sigma$:
 \[
   \scalebox{\defscalefactor}{$\Box$:}
   \begin{scprooftree*}
@@ -467,11 +521,11 @@ induction on the structure of the context $\Sigma$:
     \UIC{$\Gamma\prod\Sigma[\st{A}]\fCenter\Delta$}
   \end{scprooftree*}
 \]
-Using this derived rule, we can derive variants of the
-$\himpl{L_{\lambda}}$- and $\himpr{R_{\lambda}}$-rules. We name these
-$qL$  and $qR$, to signify that they no longer employ a structural
-$\lambda$, and because they can be composed to implement
-\citepos{moortgat1996} $q$-connective:
+Using this derived rule, we can derive two rules which correspond to
+\citepos{barker2015} $\himpl{L_{\lambda}}$- and
+$\himpr{R_{\lambda}}$-rules. We name these $qL$ and $qR$, to signify
+that they no longer employ a structural $\lambda$, and because they
+can be composed to implement \citepos{moortgat1996} $q$-connective:
 \[
   \scalebox{\defscalefactor}{$qL$:}
   \begin{scprooftree*}
@@ -500,8 +554,8 @@ $\lambda$, and because they can be composed to implement
 \]
 Proof search with the logical and residuation rules for
 $\impr,\prod,\impl$, $\himpr,\hprod,\himpl$ and $\di,\sq$, and the
-derived rules $qL$ and $qR$ is decidable, as this system has both the
-subformula and substructure properties.\footnote{%
+derived rules $qL$ and $qR$ is decidable, as the rules of this system
+have both the subformula and (weak) substructure properties.\footnote{%
   If we want decidable proof search for our axiomatic system, we
   can restrict access to problematic $\I$-rule to single uses by
   quantifiers using a license.
@@ -509,8 +563,18 @@ subformula and substructure properties.\footnote{%
 If we are willing to assume that the $\himpr,\himpl$-connectives only
 occur in syntactic categories as part of the larger quantifier
 construction ${C}\himpl({A}\himpr{B})$, then this system is also
-complete with
-respect to our axiomatic system.
+complete with respect to our axiomatic system.
+This can be proven using a variant of \citepos[][ch.\ 17.6 and
+17.7]{barker2015} proof of equivalence between {\NLLAM} and {\NLCL}.
+
+% TODO: add comment with regards to the updown rule being sufficient
+% for completeness w.r.t. the TOTAL system, but proof search being a
+% bit... crap because, while it won't lead to anything, the system
+% will have the ability to raise any constituent... and then maybe
+% something about licensing that rule.
+
+
+%%% THIS IS WHERE I STOPPED
 
 \subsubsection{Continuation semantics for {\NLCL}}%
 \label{sec:continuation-semantics-2}
