@@ -521,11 +521,52 @@ It can be derived by induction on the structure of the context $\Sigma$:
     \UIC{$\Gamma\prod\Sigma[\st{A}]\fCenter\Delta$}
   \end{scprooftree*}
 \]
-Using this derived rule, we can derive two rules which correspond to
+It should be noted that the $\uparrow\downarrow$-rule can serve as a
+normal-form for the \I\B\C-rules. Briefly, this is true because the
+\I\B\C-rules can do nothing but move a constituent up, or down along
+an existing path---the $\uparrow\downarrow$-rule mere captures this
+more succintly.
+A formal proof of this can be given by implementing a normalisation
+function using the commutative conversions for the {\B} and {\C}
+rules:
+one can move the applications of the {\B} and {\C} rules around until
+they form a continuous sequence (interspersed with residuation rules)
+starting (or ending) with an application of the \I-rule.
+This sequence of applications can then be replaced by a single
+application of the $\uparrow\downarrow$-rule.
+Therefore, proof search using the $\uparrow\downarrow$-rule is
+complete with repsect to the the \I\B\C-rules.
+
+Since proof search with the $\uparrow\downarrow$-rule eliminates the
+need for the \I-rule, it is decidable.
+To see why, note that the $\uparrow\downarrow$-rule introduces a
+hollow product, and cannot move a constituent upwards past such a
+product.
+Therefore, an infinite loop in the search caused by this rule will
+invariable contain a repeating sequent.
+However, this will not stop the search from attempting to raise and
+lower every sequence.
+Worse: the system is capable of raising a second constituent while a
+first has yet to come down. This means that for a sequent with $n$
+(possibly nested) structures, we have $n!$ different ways to raise
+all of these---and after every application of a logical rule, we can
+attempt to raise and lower each of these again.\footnote{%
+  We can restrict the search by introducing a quantifier
+  license---e.g.\ a unary connective \textbf{Q}---and eliminating this
+  license when \emph{raising}.
+  In the same vein, we can use a quantifier license to obtain
+  decidable proof search for our axiomatic system, by restricting
+  access to the problematic $\I$-rule by requiring a \textbf{Q}.
+}
+
+To solve this, we can derive two rules, corresponding to
 \citepos{barker2015} $\himpl{L_{\lambda}}$- and
-$\himpr{R_{\lambda}}$-rules. We name these $qL$ and $qR$, to signify
-that they no longer employ a structural $\lambda$, and because they
-can be composed to implement \citepos{moortgat1996} $q$-connective:
+$\himpr{R_{\lambda}}$-rules.
+These rules combine an application of $\uparrow\downarrow$-rule with
+an application of $\himpl L$ or $\himpr R$.
+We name them $qL$ and $qR$, to signify that they no longer employ a
+structural $\lambda$, and because they can be composed to implement
+\citepos{moortgat1996} $q$-connective:
 \[
   \scalebox{\defscalefactor}{$qL$:}
   \begin{scprooftree*}
@@ -552,26 +593,58 @@ can be composed to implement \citepos{moortgat1996} $q$-connective:
     \UIC{$\trace{\Sigma}\fCenter\st{\q{A}{B}{}}$}
   \end{scprooftree*}
 \]
-Proof search with the logical and residuation rules for
-$\impr,\prod,\impl$, $\himpr,\hprod,\himpl$ and $\di,\sq$, and the
-derived rules $qL$ and $qR$ is decidable, as the rules of this system
-have both the subformula and (weak) substructure properties.\footnote{%
-  If we want decidable proof search for our axiomatic system, we
-  can restrict access to problematic $\I$-rule to single uses by
-  quantifiers using a license.
-}
-If we are willing to assume that the $\himpr,\himpl$-connectives only
-occur in syntactic categories as part of the larger quantifier
-construction ${C}\himpl({A}\himpr{B})$, then this system is also
-complete with respect to our axiomatic system.
-This can be proven using a variant of \citepos[][ch.\ 17.6 and
-17.7]{barker2015} proof of equivalence between {\NLLAM} and {\NLCL}.
+As these rules eliminate a logical connective, they enjoy the
+subformula property.
+Therefore, proof search with these rules is decidable.
+Even better, it is \emph{efficient}, as the $qL$ and $qR$ rules can
+only apply to quantifiers.
 
-% TODO: add comment with regards to the updown rule being sufficient
-% for completeness w.r.t. the TOTAL system, but proof search being a
-% bit... crap because, while it won't lead to anything, the system
-% will have the ability to raise any constituent... and then maybe
-% something about licensing that rule.
+In fact, proof search with $qL$ and $qR$ is complete.\footnote{%
+  In addition to the proof sketch below, this can be proven using a
+  variant of \citepos[][ch.\ 17.6 and 17.7]{barker2015} proof of
+  equivalence between {\NLLAM} and {\NLCL}.
+}
+Briefly, let us assume that the $\himpr,\himpl$-connectives only occur
+in syntactic categories as part of the larger quantifier construction
+${C}\himpl({A}\himpr{B})$.
+If this is the case, then we still have access to all the same
+operations that the $\uparrow\downarrow$-rule provided.
+Now let us consider what other constructions the
+$\himpr,\himpl$-connectives can meaningfully occur in.
+By our choice of {\I}, {\B} and {\C} rules, we always raise the
+quantifier to the top-left position, joined to a hollow product.
+There are two interesting cases: either
+\begin{enumerate*}[label= (\arabic*)]
+\item%
+  the main connective of the quantifier is $\himpl$, so that it could
+  take the right-hand side of the hollow product as an argument; or
+\item
+  the main connective on the right-hand side of the hollow product is
+  $\himpr$, so that it could take the quantifier as an argument.
+\end{enumerate*}
+In the first case, we can simply apply {$\himpl L$}.
+The second case, however, cannot occur, as we know from the definition
+of $\trace{\cdot}$ that the main connective on the right-hand side
+must be a solid product.\footnote{%
+  Note that this property is not necessarily preserved if we extend
+  the logic with other structural rules mentioning the hollow
+  connectives.
+}
+Therefore, the only case is for the main connective in the quantifier
+to be $\himpl$. By a similar argument, we can show that the second
+connective in the quantifier must, in fact, be $\himpr$, leading to
+the ${C}\himpl({A}\himpr{B})$ structure.
+
+Henceforth, if we refer to proof search for {f\NLCL}, we are referring
+to search using the logical and residuation rules for $\impr, \prod,
+\impl$, $\himpr, \hprod, \himpl$ and $\di, \sq$, and the $qL$ and $qR$
+rules.\footnote{%
+  In fact, no proof will ever explicitly use the logical or
+  residuation rules for $\himpr, \hprod, \himpl$, leading to a
+  question of whether it is really necessary for $\himpl$ and $\himpr$
+  to be fully residuated logical implications. But this is a matter
+  for another paper.
+}
 
 
 %%% THIS IS WHERE I STOPPED
@@ -579,17 +652,19 @@ This can be proven using a variant of \citepos[][ch.\ 17.6 and
 \subsubsection{Continuation semantics for {\NLCL}}%
 \label{sec:continuation-semantics-2}
 
-A normal-form calculus for proof search is a great improvement for
-proof search, but the gain we were really after is \citepos[][sec.\ %
-3.1]{moortgat2012} CPS semantics.
-We can trivially restrict their translation to NL, and then extend
-it to cover {\NLCL}.
+A normal-form calculus for proof search is a great improvement, but
+we were really after \citepos[][sec.\ 3.1]{moortgat2012} CPS
+semantics.
+As with the calculus itself, we can trivially restrict their
+translation to fNL, and then extend it to cover {f\NLCL}.
 In \autoref{fig:cps-semantics}, we present the translation on types
 and sequents.
+
 \input{fig-cps-semantics}
+
 We extend the translation on types to a translation on structures as
 follows: we translate all structural constants (\I,\B,\C) as units,
-forget all unary structural connectives ($\di,\sq$), and translate
+forget all unary structural connectives ($\di,\sq$), and translate all
 binary structural connectives as products. Atomic structures $\st{A}$
 are translated as $\tr{A}^-$ or $\tr{A}^+$, depending on the polarity
 of the structure $\st{A}$.
@@ -637,8 +712,8 @@ $np \impl n$.\footnote{%
 }
 This will result in \emph{two} interpretations for
 (\ref{ex:scope-island}), and \emph{three} interpretations for
-(\ref{ex:wide-scope-indefinite}), as required. Let us consider the
-important steps in the derivation of (\ref{ex:wide-scope-indefinite}):
+(\ref{ex:weak-quantifier}), as required. Let us consider the
+important steps in the derivation of (\ref{ex:weak-quantifier}):
 \begin{enumerate}
 \item the quantifier movement and scope taking of ``everyone'';
 \item the collapsing of the scope island, isolating the clause
@@ -647,9 +722,9 @@ important steps in the derivation of (\ref{ex:wide-scope-indefinite}):
   at the top-level.
 \end{enumerate}
 If these steps are taken [1,2,3], we obtain interpretation
-(\ref{ex:wide-scope-indefinite}a); if they are taken [1,3,2], we
-obtain (\ref{ex:wide-scope-indefinite}b); and if they are taken
-[3,1,2], we obtain (\ref{ex:wide-scope-indefinite}c).\footnote{%
+(\ref{ex:weak-quantifier}a); if they are taken [1,3,2], we obtain
+(\ref{ex:weak-quantifier}b); and if they are taken [3,1,2], we obtain
+(\ref{ex:weak-quantifier}c).\footnote{%
   The normal-form requires that 1 occurs before 2, so this list is
   exhaustive.
 }
@@ -659,12 +734,12 @@ We presented an improvement over \citepos{barker2015} {\NLCL} for which
 derivability is decidable, and which has a normal-form for proof
 search. In addition, it can analyse scope islands, and distinguish
 between strong and weak quantifiers, shown by the ability to analyse
-examples (\ref{ex:scope-ambiguity}-\ref{ex:np-quantifier}).
-Of these examples, (\ref{ex:scope-ambiguity}-\ref{ex:wide-scope-indefinite})
+examples (\ref{ex:scope-ambiguity}-\ref{ex:changing-result-type}).
+Of these examples, (\ref{ex:scope-ambiguity}-\ref{ex:weak-quantifier})
 are representative examples of scope islands and strong and weak
 quantifiers, for which \citet{kiselyov2014} provides a purely semantic
-analysis. The remaining example, (\ref{ex:np-quantifier}), is our
-improvement over their work, and motivated us to start from
+analysis. The remaining example, (\ref{ex:changing-result-type}), is
+our improvement over their work, and motivated us to start from
 \citepos{barker2015} syntactic approach.
 
 \bibliographystyle{apalike}
