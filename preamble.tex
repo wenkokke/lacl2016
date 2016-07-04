@@ -10,12 +10,14 @@
 \addto\extrasenglish{\def\subsectionautorefname{section}}
 \addto\extrasenglish{\def\subsubsectionautorefname{section}}
 
+\usepackage{twoopt}
 \usepackage{tikz}
 \usepackage{tikz-qtree}
 
 \usepackage{amsmath,amssymb}
 \usepackage{stmaryrd}
 \usepackage{comment}
+\usepackage{rotating}
 \usepackage{xifthen}
 \usepackage{makeidx}
 \usepackage{lingmacros}
@@ -24,31 +26,31 @@
 
 \usepackage{bussproofs}
 \usepackage{graphicx}
-\EnableBpAbbreviations
+\EnableBpAbbreviations%
 \def\fCenter{\mathbin{\vdash}}
 \def\defscalefactor{0.7875}
 \newenvironment{scprooftree}[1][\defscalefactor]%
-  {\gdef\scalefactor{#1}\begin{center}\proofSkipAmount \leavevmode}%
-  {\scalebox{\scalefactor}{\DisplayProof}\proofSkipAmount \end{center} }
+  {\gdef\scalefactor{#1}\begin{center}\proofSkipAmount\leavevmode}%
+  {\scalebox{\scalefactor}{\DisplayProof}\proofSkipAmount\end{center} }
 \newenvironment{scprooftree*}[1][\defscalefactor]%
   {\gdef\scalefactor{#1} \leavevmode\hbox\bgroup}%
   {\scalebox{\scalefactor}{\DisplayProof} \egroup}
 
 \usepackage[numbers]{natbib}
-\renewcommand\bibsection
+\renewcommand\bibsection%
   {\section*{\refname}\small\renewcommand\bibnumfmt[1]{##1.}}
 \usepackage{xstring}
 \usepackage{etoolbox}
 \makeatletter
 \patchcmd{\NAT@test}{\else \NAT@nm}{\else \NAT@nmfmt{\NAT@nm}}{}{}
 
-\DeclareRobustCommand\citepos
+\DeclareRobustCommand\citepos%
   {\begingroup
    \let\NAT@nmfmt\NAT@posfmt% ...except with a different name format
-   \NAT@swafalse\let\NAT@ctype\z@\NAT@partrue
+   \NAT@swafalse\let\NAT@ctype\z@\NAT@partrue%
    \@ifstar{\NAT@fulltrue\NAT@citetp}{\NAT@fullfalse\NAT@citetp}}
 
-\let\NAT@orig@nmfmt\NAT@nmfmt
+\let\NAT@orig@nmfmt\NAT@nmfmt%
 \def\NAT@posfmt#1{%
   \StrRemoveBraces{#1}[\NAT@temp]%
   \IfEndWith{\NAT@temp}{s}
@@ -59,6 +61,8 @@
 \usepackage{keyval}
 \usepackage{usebib}
 
+% downmapsto.
+\def\downmapsto{\rotatebox[origin=c]{270}{\ensuremath{\mapsto}}}%
 
 % abbrev.
 \def\e{\ensuremath{\mathbf{e}}}
@@ -71,6 +75,7 @@
 \def\SCARED{\ensuremath{\mathbf{scared}}}
 \def\BOOK{\ensuremath{\mathbf{book}}}
 \def\READ{\ensuremath{\mathbf{read}}}
+\def\LIKE{\ensuremath{\mathbf{like}}}
 \def\FEAR{\ensuremath{\mathbf{fear}}}
 \def\KURT{\ensuremath{\mathbf{kurt}}}
 \def\MARY{\ensuremath{\mathbf{mary}}}
@@ -84,18 +89,86 @@
 \def\C{\ensuremath{\mathbf{C}}}
 \def\Q{\ensuremath{\mathbf{Q}}}
 \def\prod{\bullet}
-\def\impr{\backslash}
-\def\impl{\slash}
+\def\impr{\mathbin{\backslash}}
+\def\impl{\mathbin{\slash}}
 \def\hprod{\mathbin{\circ}}
 \def\himpr{\fatbslash}
 \def\himpl{\mathbin{\!\fatslash\,}}
 \newcommand{\st}[1]{\cdot #1 \cdot}
 \newcommand{\fc}[1]{\boxed{ #1 }}
 \newcommand{\sq}[1][]{\ifthenelse{\isempty{#1}}{\square}{[#1]}}
-\newcommand{\di}[1][]{\ifthenelse{\isempty{#1}}{\lozenge}{\langle #1 \rangle}}
-\newcommand{\tr}[1]{\llbracket #1\rrbracket}
+\newcommand{\di}[1][]{\ifthenelse{\isempty{#1}}{\lozenge}{\langle{#1}\rangle}}
+\newcommand{\tr}[1]{\llbracket{#1}\rrbracket}
 \newcommand{\trace}[1]{\ensuremath{\overline{#1}}}
-\newcommand{\q}[3]{{#1}\himpl({#1}\himpr{#2})}
-
+\newcommandtwoopt{\q}[3][][]{\ifx&#2&\ifx&#1&\textbf{Q}{#3}\else{#1}\himpr{#3}\fi\else{#3}\himpl({#1}\himpr{#2})\fi}
+%
+\def\ruleAxL{Ax^{L}}
+\def\ruleAxR{Ax^{R}}
+\def\ruleFocL{Foc^{L}}
+\def\ruleFocR{Foc^{R}}
+\def\ruleUnfL{Unf^{L}}
+\def\ruleUnfR{Unf^{R}}
+\def\ruleImpRSolidL{{\impr}L}
+\def\ruleImpRSolidR{{\impr}R}
+\def\ruleImpLSolidL{{\impl}L}
+\def\ruleImpLSolidR{{\impl}R}
+\def\ruleImpRQuanStrongL{{\himpr}L}
+\def\ruleImpRQuanStrongR{{\himpr}R}
+\def\ruleImpLQuanStrongL{{\himpl}L}
+\def\ruleImpLQuanStrongR{{\himpl}R}
+\def\ruleImpRQuanWeakL{{\himpr}L}
+\def\ruleImpRQuanWeakR{{\himpr}R}
+\def\ruleImpLQuanWeakL{{\himpl}L}
+\def\ruleImpLQuanWeakR{{\himpl}R}
+\def\ruleResLPSolid{\text{Res}{\impl}{\prod}}
+\def\ruleResPLSolid{\text{Res}{\prod}{\impl}}
+\def\ruleResRPSolid{\text{Res}{\impr}{\prod}}
+\def\ruleResPRSolid{\text{Res}{\prod}{\impr}}
+\def\ruleResLPQuanStrong{\text{Res}{\himpl}{\hprod}}
+\def\ruleResPLQuanStrong{\text{Res}{\hprod}{\himpl}}
+\def\ruleResRPQuanStrong{\text{Res}{\himpr}{\hprod}}
+\def\ruleResPRQuanStrong{\text{Res}{\hprod}{\himpr}}
+\def\ruleUnitLQuanStrongR{\I}
+\def\ruleUnitLQuanStrongL{\I}
+\def\ruleUnitLQuanStrongI{\I}
+\def\ruleResLPQuanWeak{\text{Res}{\himpl}{\hprod}}
+\def\ruleResPLQuanWeak{\text{Res}{\hprod}{\himpl}}
+\def\ruleResRPQuanWeak{\text{Res}{\himpr}{\hprod}}
+\def\ruleResPRQuanWeak{\text{Res}{\hprod}{\himpr}}
+\def\ruleUnitLQuanWeakR{\I}
+\def\ruleUnitLQuanWeakL{\I}
+\def\ruleUnitLQuanWeakI{\I}
+\def\ruleDnBQuanStrong{\text{Dn}\B}
+\def\ruleDnCQuanStrong{\text{Dn}\C}
+\def\ruleUpBQuanStrong{\text{Up}\B}
+\def\ruleUpCQuanStrong{\text{Up}\C}
+\def\ruleDnBQuanWeak{\text{Dn}\B}
+\def\ruleDnCQuanWeak{\text{Dn}\C}
+\def\ruleUpBQuanWeak{\text{Up}\B}
+\def\ruleUpCQuanWeak{\text{Up}\C}
+\def\atomS{s}
+\def\atomN{n}
+\def\atomNP{np}
+\def\strb{\B}
+\def\strc{\C}
+\def\strunitQuanStrong{\I}
+\def\strunitQuanWeak{\I}
+\newcommand{\impRSolid}[2]{\ensuremath{{#1}\impr{#2}}}
+\newcommand{\impLSolid}[2]{{#1}\impl{#2}}
+\newcommand{\impRQuanStrong}[2]{{#1}\himpr{#2}}
+\newcommand{\impLQuanStrong}[2]{{#1}\himpl{#2}}
+\newcommand{\impRQuanWeak}[2]{{#1}\himpr{#2}}
+\newcommand{\impLQuanWeak}[2]{{#1}\himpl{#2}}
+\newcommand{\strprodSolid}[2]{{#1}\prod{#2}}
+\newcommand{\strimpRSolid}[2]{{#1}\impr{#2}}
+\newcommand{\strimpLSolid}[2]{{#1}\impl{#2}}
+\newcommand{\strimpRQuanStrong}[2]{{#1}\himpr{#2}}
+\newcommand{\strimpLQuanStrong}[2]{{#1}\himpl{#2}}
+\newcommand{\strprodQuanStrong}[2]{{#1}\hprod{#2}}
+\newcommand{\unitLQuanStrong}[1]{#1}
+\newcommand{\strimpRQuanWeak}[2]{{#1}\himpr{#2}}
+\newcommand{\strimpLQuanWeak}[2]{{#1}\himpl{#2}}
+\newcommand{\strprodQuanWeak}[2]{{#1}\hprod{#2}}
+\newcommand{\unitLQuanWeak}[1]{#1}
 % only during writing
-\usepackage{xcolor}
+% \usepackage{xcolor}

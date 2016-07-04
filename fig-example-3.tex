@@ -1,0 +1,32 @@
+\begin{scprooftree}
+  \RightLabel{$\impl L$}
+  \AXC{}\RightLabel{$Ax^R$}\UIC{$\textsc{book}\fCenter\st{n}$}
+  \AXC{$\vdots$}\noLine%
+  \UIC{$
+    \textsc{everyone}\prod\textsc{said}\prod
+    \langle\textsc{Kurt}\prod\textsc{dedicated}\prod
+    \st{np}\prod\:\textsc{to}\prod\textsc{mary}\rangle
+    \fCenter
+    \st{s}$}
+  \RightLabel{dp}
+  \UIC{$
+    \fc{np}
+    \fCenter
+    (\textsc{dedicated}\impr(\textsc{Kurt}\impr
+    [(\textsc{said}\impr(\textsc{everyone}\impr\st{s}))]))\impl
+    (\textsc{to}\prod\textsc{mary})$}
+  \RightLabel{$\impl L$}
+  \BIC{$
+    \fc{\textsc{a}}
+    \fCenter
+    ((\textsc{dedicated}\impr(\textsc{Kurt}\impr
+    [(\textsc{said}\impr(\textsc{everyone}\impr\st{s}))]))\impl
+    (\textsc{to}\prod\textsc{mary}))\impl\textsc{book}$}
+  \RightLabel{dp}
+  \UIC{$
+    \textsc{everyone}\prod\textsc{said}\prod
+    \langle\textsc{Kurt}\prod\textsc{dedicated}\prod\textsc{a}\prod
+    \textsc{book}\prod\textsc{to}\prod\textsc{mary}\rangle
+    \fCenter
+    \st{s}$}
+\end{scprooftree}%

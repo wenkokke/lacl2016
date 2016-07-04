@@ -1,0 +1,67 @@
+\begin{scprooftree}
+  \AXC{}\RightLabel{$Ax^R$}\UIC{$\textsc{ocean}\fCenter\fc{n}$}
+  \AXC{$\vdots$}\noLine%
+  \UIC{$
+    \textsc{the}\prod\textsc{author}\prod\textsc{of}\prod\st{np}
+    \fCenter \st{np}$}
+  \UIC{$
+    \trace{\textsc{the}\prod\textsc{author}\prod\textsc{of}\prod\Box}
+    \fCenter \st{\q[np]{np}}$}
+  \UIC{$
+    \trace{\textsc{the}\prod\textsc{author}\prod\textsc{of}\prod\Box}
+    \fCenter \fc{\q[np]{np}}$}
+
+  \AXC{$\vdots$}\noLine%
+  \UIC{$\st{np}\prod\textsc{feared}\prod\st{np}\fCenter\st{s}$}
+  \RightLabel{dp}
+  \UIC{$\textsc{feared}\prod\st{np}\fCenter\st{np}\impr\st{s}$}
+  \RightLabel{$\impr R$}
+  \UIC{$\textsc{feared}\prod\st{np}\fCenter\st{{np}\impr{s}}$}
+  \RightLabel{$Unf^R$}
+  \UIC{$\textsc{feared}\prod\st{np}\fCenter\fc{{np}\impr{s}}$}
+
+  \AXC{}\RightLabel{$Ax^R$}\UIC{$\textsc{book}\fCenter\fc{n}$}
+  \AXC{$\vdots$}\noLine%
+  \UIC{$
+    \textsc{John}\prod\textsc{read}\prod\textsc{a}\prod\st{n}
+    \fCenter
+    \st{s}$}
+  \RightLabel{dp}
+  \UIC{$
+    \fc{n}
+    \fCenter
+    \textsc{a}\impr(\textsc{read}\impr(\textsc{John}\impr\st{s}))$}
+  \RightLabel{$\impl L$}
+  \BIC{$
+    \fc{{n}\impr{n}}
+    \fCenter
+    \textsc{book}\impr
+    (\textsc{a}\impr(\textsc{read}\impr(\textsc{John}\impr\st{s})))$}
+
+  \RightLabel{$\impl L$}
+  \BIC{$ \fc{({n}\impr{n})\impl({np}\impr{s})} \fCenter
+    (\textsc{book}\impr
+    (\textsc{a}\impr(\textsc{read}\impr(\textsc{John}\impr\st{s}))))
+    \impl(\textsc{feared}\prod\st{np})$}
+  \RightLabel{$qR$}
+  \BIC{$
+    \textsc{the}\prod\textsc{author}\prod\textsc{of}\prod\textsc{which}
+    \fCenter (\textsc{book}\impr
+    (\textsc{a}\impr(\textsc{read}\impr(\textsc{John}\impr\st{s}))))
+    \impl(\textsc{feared}\prod\st{np})$} \RightLabel{dp}
+  \UIC{$ \fc{np} \fCenter \textsc{feared}\impr
+    (\textsc{the}\prod\textsc{author}\prod\textsc{of}\prod\textsc{which})\impr
+    (\textsc{book}\impr
+    (\textsc{a}\impr(\textsc{read}\impr(\textsc{John}\impr\st{s}))))$}
+  \RightLabel{$\impl L$}
+  \BIC{$ \fc{\textsc{the}} \fCenter (\textsc{feared}\impr
+    ((\textsc{the}\prod\textsc{author}\prod\textsc{of}\prod\textsc{which})\impr
+    (\textsc{book}\impr
+    (\textsc{a}\impr(\textsc{read}\impr(\textsc{John}\impr\st{s}))))))\impl
+    \textsc{ocean}$} \RightLabel{dp}
+  \UIC{$
+    \textsc{John}\prod\textsc{read}\prod\textsc{a}\prod\textsc{book}\prod
+    (\textsc{the}\prod\textsc{author}\prod\textsc{of}\prod\textsc{which})\prod
+    \textsc{feared}\prod\textsc{the}\prod\textsc{ocean} \fCenter
+    \st{s}$}
+\end{scprooftree}

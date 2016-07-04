@@ -14,6 +14,13 @@
 %  \email{pepijn.kokke@gmail.com}}
 \maketitle
 
+\begin{abstract}
+  We propose an improvement of \citepos{barker2015} {\NLCL} for which
+  derivability is decidable, which has a normal-form for proof search,
+  can analyse scope islands, and distinguish between strong and weak
+  quantifiers.
+\end{abstract}
+
 \section{Introduction}\label{sec:introduction}
 
 In \citeyear{kiselyov2014}, \citet{kiselyov2014} published a
@@ -448,12 +455,52 @@ only two things to do:
   \emph{eliminating} a connective and breaking out of any loop; or
 \item go back down along the same path.
 \end{enumerate*}
-%
 Yet when searching for a proof with the \I-rule, we can always
 introduce another \I.
 
-\citet[][ch.\ 17.6]{barker2015} address this, albeit in a convoluted
-way. They show that {\NLLAM} can be embedded in {\NLCL}, using a variant
+We will address this issue by restricting access to the \I-rule using
+a license.
+This license will be a new unary connective, written $\q{A}$.
+Semantically, this logical connective corresponds to a hollow product
+with a right-hand {\I} (i.e.\ ${A}\hprod\I$).
+However, as we want neither hollow products, nor the unit $\I$, on the
+logical level, we capture these in a single connective.
+We remove the $\I$-rule, and add the following three rules to the
+calculus in \autoref{fig:focused-nlcl}:
+\begin{center}
+  \begin{scprooftree*}
+    \AXC{$\st{A}\hprod\:\I\fCenter\Delta$}
+    \RightLabel{$\I L$}
+    \UIC{$\st{\q{A}}\fCenter\Delta$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter\fc{B}$}
+    \RightLabel{$\I R$}
+    \UIC{$\Gamma\hprod\I\fCenter\fc{\q{B}}$}
+  \end{scprooftree*}%
+  \begin{scprooftree*}
+    \AXC{$\Gamma\fCenter\Delta$}
+    \RightLabel{$\I^-$}
+    \UIC{$\Gamma\hprod\I\fCenter\Delta$}
+  \end{scprooftree*}
+\end{center}
+The first two of these rules are the display calculus rules for
+right-hand products. The third is the remaining direction of the
+original $\I$-rule. With this change, quantifier raising is restricted
+to expressions of the form $\q{(\q[A][B]{C})}$, and proof search becomes
+decidable.
+
+%%% CHANGE MAPPINGS AND PROOFS S.T. THEY STRUCTURALIZE THE Q
+
+One problem which remains is that the {\B} and {\C} rules cause a
+huge amount of spurious ambiguity.
+To see why, note that when raising multiple quantifiers, it is
+possible to intersperse the various applications of the {\B} and {\C}
+rules in many different ways.
+To solve this, we will take some inspiration from \citet[][ch.\
+17.6]{barker2015}, who solve this issue, albeit in a convoluted
+way.
+They show that {\NLLAM} can be embedded in {\NLCL}, using a variant
 of Sch\"onfinkel's mapping from $\lambda$-terms to combinatory logic.
 Later, they show that a pair of derived rules, $\himpl{L_{\lambda}}$
 and $\himpr{R_{\lambda}}$, can serve as a normal-form for the
@@ -477,7 +524,7 @@ Sch\"onfinkel's mapping (written $\overline{\cdot}$) \citep[cf.][ch.\ %
   \begin{scprooftree*}
     \AXC{$\st{A}\hprod\:\trace{\Sigma}\fCenter\Delta$}
     \doubleLine\RightLabel{$\uparrow\downarrow$}
-    \UIC{$\Sigma[\st{A}]\fCenter\Delta$}
+    \UIC{$\Sigma[\st{\q{A}}]\fCenter\Delta$}
   \end{scprooftree*}
 \]
 We can use this mapping in the definition of a derived rule: the
@@ -486,46 +533,157 @@ depending on the direction in which it is applied.\footnote{%
   These correspond to \citepos[][p.\ 201]{barker2015}
   \textsc{expansion} and \textsc{reduction} rules, respectively.
 }
-It can be derived by induction on the structure of the context $\Sigma$:
+We can derive the this rule using three lemmas:
+\[
+  \scalebox{\defscalefactor}{$\q{}/\I$:}
+  \begin{scprooftree*}
+    \AXC{$\Sigma[\st{A}\hprod\:\I\:]\fCenter\Delta$}
+    \RightLabel{$\q{}/\I$}
+    \UIC{$\Sigma[\st{\q{A}}]\fCenter\Delta$}
+  \end{scprooftree*}
+  \quad
+  \scalebox{\defscalefactor}{$I^{-\prime}$:}
+  \begin{scprooftree*}
+    \AXC{$\Sigma[\Gamma]\fCenter\Delta$}
+    \RightLabel{$\I^{-\prime}$}
+    \UIC{$\Sigma[\Gamma\hprod\:\I\:]\fCenter\Delta$}
+  \end{scprooftree*}
+  \quad
+  \scalebox{\defscalefactor}{$\uparrow\downarrow'$:}
+  \begin{scprooftree*}
+    \AXC{$\Gamma\hprod\Sigma[\Gamma']\fCenter\Delta$}
+    \doubleLine\RightLabel{$\uparrow\downarrow'$}
+    \UIC{$\Sigma[\Gamma\hprod\Gamma']\fCenter\Delta$}
+  \end{scprooftree*}
+\]
+Using these lemmas, we can derive the two directions of
+$\uparrow\downarrow$ as follows:
+\[
+  \scalebox{\defscalefactor}{$\uparrow$:}
+  \begin{scprooftree*}
+    \AXC{$\st{A}\hprod\:\trace{\Sigma}\fCenter\Delta$}
+    \RightLabel{$\uparrow\downarrow'$}
+    \UIC{$\Sigma[\st{A}\hprod\:\I\:]\fCenter\Delta$}
+    \RightLabel{$\q{}/\I$}
+    \UIC{$\Sigma[\st{\q{A}}]\fCenter\Delta$}
+  \end{scprooftree*}
+  \qquad
+  \scalebox{\defscalefactor}{$\downarrow$:}
+  \begin{scprooftree*}
+    \AXC{$\Sigma[\st{A}]\fCenter\Delta$}
+    \RightLabel{$I^{-\prime}$}
+    \UIC{$\Sigma[\st{A}\hprod\:\I\:]\fCenter\Delta$}
+    \RightLabel{$\uparrow\downarrow'$}
+    \UIC{$\st{A}\hprod\:\trace{\Sigma}\fCenter\Delta$}
+  \end{scprooftree*}
+\]
+The lemmas themselves can be derived by induction on the structure of
+the context $\Sigma$. The derivation of $\q{}/\I$ and $\I^{-\prime}$
+is done as follows:
 \[
   \scalebox{\defscalefactor}{$\Box$:}
   \begin{scprooftree*}
     \AXC{$\st{A}\hprod\:\I\fCenter\Delta$}
-    \doubleLine\RightLabel{\I}
-    \UIC{$\st{A}\fCenter\Delta$}
+    \RightLabel{$\I L$}
+    \UIC{$\st{\q{A}}\fCenter\Delta$}
   \end{scprooftree*}
   \quad
   \scalebox{\defscalefactor}{$\Sigma\prod\Gamma$:}
   \begin{scprooftree*}
-    \AXC{$\st{A}\hprod\:((\C\prod\trace{\Sigma})\prod\Gamma)\fCenter\Delta$}
-    \doubleLine\RightLabel{\C}
-    \UIC{$(\st{A}\hprod\:\trace{\Sigma})\prod\Gamma\fCenter\Delta$}
-    \doubleLine\RightLabel{Res$\impl\prod$}
-    \UIC{$\st{A}\hprod\:\trace{\Sigma}\fCenter\Delta\impl\Gamma$}
-    \doubleLine\RightLabel{$\uparrow\downarrow$}
-    \UIC{$\Sigma[\st{A}]\fCenter\Delta\impl\Gamma$}
-    \doubleLine\RightLabel{Res$\impl\prod$}
-    \UIC{$\Sigma[\st{A}]\prod\Gamma\fCenter\Delta$}
+    \AXC{$\Sigma[\st{A}\hprod\:\I\:]\prod\Gamma\fCenter\Delta$}
+    \RightLabel{Res$\impl\prod$}
+    \UIC{$\Sigma[\st{A}\hprod\:\I\:]\fCenter\Delta\impl\Gamma$}
+    \RightLabel{$\q{}/\I$}
+    \UIC{$\Sigma[\st{\q{A}}]\fCenter\Delta\impl\Gamma$}
+    \RightLabel{Res$\impl\prod$}
+    \UIC{$\Sigma[\st{\q{A}}]\prod\Gamma\fCenter\Delta$}
   \end{scprooftree*}
   \quad
   \scalebox{\defscalefactor}{$\Gamma\prod\Sigma$:}
   \begin{scprooftree*}
-    \AXC{$\st{A}\hprod\:((\B\prod\Gamma)\prod\trace{\Sigma})\fCenter\Delta$}
-    \doubleLine\RightLabel{\B}
-    \UIC{$\Gamma\prod(\st{A}\hprod\:\trace{\Sigma})\fCenter\Delta$}
-    \doubleLine\RightLabel{Res$\impr\prod$}
-    \UIC{$\st{A}\hprod\:\trace{\Sigma}\fCenter\Gamma\impr\Delta$}
-    \doubleLine\RightLabel{$\uparrow\downarrow$}
-    \UIC{$\Sigma[\st{A}]\fCenter\Gamma\impr\Delta$}
-    \doubleLine\RightLabel{Res$\impr\prod$}
-    \UIC{$\Gamma\prod\Sigma[\st{A}]\fCenter\Delta$}
+    \AXC{$\Gamma\prod\Sigma[\st{A}\hprod\:\I\:]\fCenter\Delta$}
+    \RightLabel{Res$\impr\prod$}
+    \UIC{$\Sigma[\st{A}\hprod\:\I\:]\fCenter\Gamma\impr\Delta$}
+    \RightLabel{$\q{}/\I$}
+    \UIC{$\Sigma[\st{\q{A}}]\fCenter\Gamma\impr\Delta$}
+    \RightLabel{Res$\impr\prod$}
+    \UIC{$\Gamma\prod\Sigma[\st{\q{A}}]\fCenter\Delta$}
   \end{scprooftree*}
 \]
-It should be noted that the $\uparrow\downarrow$-rule can serve as a
-normal-form for the \I\B\C-rules. Briefly, this is true because the
-\I\B\C-rules can do nothing but move a constituent up, or down along
-an existing path---the $\uparrow\downarrow$-rule mere captures this
-more succintly.
+\[
+  \scalebox{\defscalefactor}{$\Box$:}
+  \begin{scprooftree*}
+    \AXC{$\st{A}\fCenter\Delta$}
+    \RightLabel{$\I^{-}$}
+    \UIC{$\st{A}\hprod\:\I\:\fCenter\Delta$}
+  \end{scprooftree*}
+  \quad
+  \scalebox{\defscalefactor}{$\Sigma\prod\Gamma$:}
+  \begin{scprooftree*}
+    \AXC{$\Sigma[\st{A}]\prod\Gamma\fCenter\Delta$}
+    \RightLabel{Res$\impl\prod$}
+    \UIC{$\Sigma[\st{A}]\fCenter\Delta\impl\Gamma$}
+    \RightLabel{$\I^{-\prime}$}
+    \UIC{$\Sigma[\st{A}\hprod\:\I\:]\fCenter\Delta\impl\Gamma$}
+    \RightLabel{Res$\impl\prod$}
+    \UIC{$\Sigma[\st{A}\hprod\:\I\:]\prod\Gamma\fCenter\Delta$}
+  \end{scprooftree*}
+  \quad
+  \scalebox{\defscalefactor}{$\Gamma\prod\Sigma$:}
+  \begin{scprooftree*}
+    \AXC{$\Gamma\prod\Sigma[\st{A}]\fCenter\Delta$}
+    \RightLabel{Res$\impr\prod$}
+    \UIC{$\Sigma[\st{A}]\fCenter\Gamma\impr\Delta$}
+    \RightLabel{$\I^{-\prime}$}
+    \UIC{$\Sigma[\st{A}\hprod\:\I\:]\fCenter\Gamma\impr\Delta$}
+    \RightLabel{Res$\impr\prod$}
+    \UIC{$\Gamma\prod\Sigma[\st{A}\hprod\:\I\:]\fCenter\Delta$}
+  \end{scprooftree*}
+\]
+These rules simply introduce or eliminate the unit $\I$ under some
+context $\Sigma$.
+The actual movement takes place in the definition of
+$\uparrow\downarrow'$. In this proof, the base case is simply the
+identity, as no movement is required to move out of the empty context:
+\[
+  \scalebox{\defscalefactor}{$\Sigma\prod\Gamma$:}
+  \begin{scprooftree*}
+    \AXC{$\Gamma\hprod((\C\prod\Sigma[\Gamma'])\prod\Gamma'')\fCenter\Delta$}
+    \doubleLine\RightLabel{\C}
+    \UIC{$(\Gamma\hprod\Sigma[\Gamma']\prod\Gamma''\fCenter\Delta$}
+    \doubleLine\RightLabel{Res$\impl\prod$}
+    \UIC{$\Gamma\hprod\Sigma[\Gamma']\fCenter\Delta\impl\Gamma''$}
+    \doubleLine\RightLabel{$\uparrow\downarrow'$}
+    \UIC{$\Sigma[\Gamma\hprod\Gamma']\fCenter\Delta\impl\Gamma''$}
+    \doubleLine\RightLabel{Res$\impl\prod$}
+    \UIC{$\Sigma[\Gamma\hprod\Gamma']\prod\Gamma''\fCenter\Delta$}
+  \end{scprooftree*}
+  \quad
+  \scalebox{\defscalefactor}{$\Gamma\prod\Sigma$:}
+  \begin{scprooftree*}
+    \AXC{$\Gamma\hprod\:((\B\prod\Gamma'')\prod\Sigma[\Gamma'])\fCenter\Delta$}
+    \doubleLine\RightLabel{\B}
+    \UIC{$\Gamma''\prod(\Gamma\hprod\Sigma[\Gamma'])\fCenter\Delta$}
+    \doubleLine\RightLabel{Res$\impr\prod$}
+    \UIC{$\Gamma\hprod\trace{\Sigma}\fCenter\Gamma''\impr\Delta$}
+    \doubleLine\RightLabel{$\uparrow\downarrow'$}
+    \UIC{$\Sigma[\Gamma\hprod\Gamma']\fCenter\Gamma''\impr\Delta$}
+    \doubleLine\RightLabel{Res$\impr\prod$}
+    \UIC{$\Gamma''\prod\Sigma[\Gamma\hprod\Gamma']\fCenter\Delta$}
+  \end{scprooftree*}
+\]
+
+Note that the $\uparrow$-rule eliminates a logical connective---the
+$\q{}$---and therefore has the subformula property.
+In addition, the $\downarrow$-rule, on the other hand, eliminates the
+trail of {\B}s and {\C}s, and thus has the substructure property.
+Because of this, proof search with these rules is decidable.
+
+Furthermore, proof search with the $\uparrow\downarrow$-rule is
+complete. Briefly, this is true because the \I\B\C-rules can do
+nothing but move a constituent up, or down along an existing
+path---the $\uparrow\downarrow$-rule mere captures this more
+succintly.
 A formal proof of this can be given by implementing a normalisation
 function using the commutative conversions for the {\B} and {\C}
 rules:
@@ -537,31 +695,8 @@ application of the $\uparrow\downarrow$-rule.
 Therefore, proof search using the $\uparrow\downarrow$-rule is
 complete with repsect to the the \I\B\C-rules.
 
-Since proof search with the $\uparrow\downarrow$-rule eliminates the
-need for the \I-rule, it is decidable.
-To see why, note that the $\uparrow\downarrow$-rule introduces a
-hollow product, and cannot move a constituent upwards past such a
-product.
-Therefore, an infinite loop in the search caused by this rule will
-invariable contain a repeating sequent.
-However, this will not stop the search from attempting to raise and
-lower every sequence.
-Worse: the system is capable of raising a second constituent while a
-first has yet to come down. This means that for a sequent with $n$
-(possibly nested) structures, we have $n!$ different ways to raise
-all of these---and after every application of a logical rule, we can
-attempt to raise and lower each of these again.\footnote{%
-  We can restrict the search by introducing a quantifier
-  license---e.g.\ a unary connective \textbf{Q}---and eliminating this
-  license when \emph{raising}.
-  In the same vein, we can use a quantifier license to obtain
-  decidable proof search for our axiomatic system, by restricting
-  access to the problematic $\I$-rule by requiring a \textbf{Q}.
-}
-
-To solve this, we can derive two rules, corresponding to
-\citepos{barker2015} $\himpl{L_{\lambda}}$- and
-$\himpr{R_{\lambda}}$-rules.
+We follow \citet{barker2015}, and derive rules corresponding to the
+$\himpl{L_{\lambda}}$- and $\himpr{R_{\lambda}}$-rules.
 These rules combine an application of $\uparrow\downarrow$-rule with
 an application of $\himpl L$ or $\himpr R$.
 We name them $qL$ and $qR$, to signify that they no longer employ a
@@ -570,16 +705,16 @@ structural $\lambda$, and because they can be composed to implement
 \[
   \scalebox{\defscalefactor}{$qL$:}
   \begin{scprooftree*}
-    \AXC{$\trace{\Sigma}\fCenter\fc{\q{A}{B}{}}$}
+    \AXC{$\trace{\Sigma}\fCenter\fc{\q[A]{B}}$}
     \AXC{$\fc{C}\fCenter\Delta$}
     \RightLabel{$\himpl L$}
-    \BIC{$\fc{\q{A}{B}{C}}\fCenter\Delta\himpl\trace{\Sigma}$}
+    \BIC{$\fc{\q[A][B]{C}}\fCenter\Delta\himpl\trace{\Sigma}$}
     \RightLabel{Foc$^L$}
-    \UIC{$\st{\q{A}{B}{C}}\fCenter\Delta\himpl\trace{\Sigma}$}
+    \UIC{$\st{\q[A][B]{C}}\fCenter\Delta\himpl\trace{\Sigma}$}
     \RightLabel{Res$\himpl\hprod$}
-    \UIC{$\st{\q{A}{B}{C}}\hprod\:\trace{\Sigma}\fCenter\Delta$}
+    \UIC{$\st{\q[A][B]{C}}\hprod\:\trace{\Sigma}\fCenter\Delta$}
     \RightLabel{$\uparrow$}
-    \UIC{$\Sigma[\st{\q{A}{B}{C}}]\fCenter\Delta$}
+    \UIC{$\Sigma[\st{\q{(\q[A][B]{C})}}]\fCenter\Delta$}
   \end{scprooftree*}
   \quad
   \scalebox{\defscalefactor}{$qR$:}
@@ -590,50 +725,19 @@ structural $\lambda$, and because they can be composed to implement
     \RightLabel{Res$\hprod\himpr$}
     \UIC{$\trace{\Sigma}\fCenter\st{A}\himpr\st{B}$}
     \RightLabel{$\himpr R$}
-    \UIC{$\trace{\Sigma}\fCenter\st{\q{A}{B}{}}$}
+    \UIC{$\trace{\Sigma}\fCenter\st{\q[A]{B}}$}
   \end{scprooftree*}
 \]
-As these rules eliminate a logical connective, they enjoy the
-subformula property.
-Therefore, proof search with these rules is decidable.
-Even better, it is \emph{efficient}, as the $qL$ and $qR$ rules can
-only apply to quantifiers.
-
-In fact, proof search with $qL$ and $qR$ is complete.\footnote{%
-  In addition to the proof sketch below, this can be proven using a
-  variant of \citepos[][ch.\ 17.6 and 17.7]{barker2015} proof of
-  equivalence between {\NLLAM} and {\NLCL}.
+As these rules eliminate at least one logical connective each, they
+still enjoy the subformula property, so proof search with these rules
+is decidable.
+In fact, it is \emph{slightly} more efficient that with the
+$\uparrow\downarrow$-rule. The reason for this is that after raising a
+quantifier, the only course of action is applying the $\himpl L$-rule
+anyway---and likewise for $qR$.\footnote{%
+  This can be proven using a variant of \citepos[][ch.\ 17.6 and
+  17.7]{barker2015} proof of equivalence between {\NLLAM} and {\NLCL}.
 }
-Briefly, let us assume that the $\himpr,\himpl$-connectives only occur
-in syntactic categories as part of the larger quantifier construction
-${C}\himpl({A}\himpr{B})$.
-If this is the case, then we still have access to all the same
-operations that the $\uparrow\downarrow$-rule provided.
-Now let us consider what other constructions the
-$\himpr,\himpl$-connectives can meaningfully occur in.
-By our choice of {\I}, {\B} and {\C} rules, we always raise the
-quantifier to the top-left position, joined to a hollow product.
-There are two interesting cases: either
-\begin{enumerate*}[label= (\arabic*)]
-\item%
-  the main connective of the quantifier is $\himpl$, so that it could
-  take the right-hand side of the hollow product as an argument; or
-\item
-  the main connective on the right-hand side of the hollow product is
-  $\himpr$, so that it could take the quantifier as an argument.
-\end{enumerate*}
-In the first case, we can simply apply {$\himpl L$}.
-The second case, however, cannot occur, as we know from the definition
-of $\trace{\cdot}$ that the main connective on the right-hand side
-must be a solid product.\footnote{%
-  Note that this property is not necessarily preserved if we extend
-  the logic with other structural rules mentioning the hollow
-  connectives.
-}
-Therefore, the only case is for the main connective in the quantifier
-to be $\himpl$. By a similar argument, we can show that the second
-connective in the quantifier must, in fact, be $\himpr$, leading to
-the ${C}\himpl({A}\himpr{B})$ structure.
 
 Henceforth, if we refer to proof search for {f\NLCL}, we are referring
 to search using the logical and residuation rules for $\impr, \prod,
@@ -656,7 +760,7 @@ A normal-form calculus for proof search is a great improvement, but
 we were really after \citepos[][sec.\ 3.1]{moortgat2012} CPS
 semantics.
 As with the calculus itself, we can trivially restrict their
-translation to fNL, and then extend it to cover {f\NLCL}.
+translation function to fNL, and then extend it to cover {f\NLCL}.
 In \autoref{fig:cps-semantics}, we present the translation on types
 and sequents.
 
@@ -695,15 +799,21 @@ which are translated as follows:
     \UIC{$x:\tr{\Gamma}\fCenter (\lambda{y}.M\;y):\tr{A}^+$}
   \end{scprooftree*}
 \end{center}
-The other rules are translated either as axioms ($Ax^L,Ax^R$),
-identities ($\impr R,\impl R,\himpr R,\himpl R$ and all rules for
-$\di,\sq$) or permutations (the rest). For instance,
+The other rules are translated either as axioms ($Ax^L$, $Ax^R$),
+identities ($\impr R$, $\impl R$, $\himpr R$, $\himpl R$ and all rules
+for $\di$, $\sq$) or permutations (the rest). For instance,
 \begin{scprooftree}
   \AXC{$x:\tr{\Gamma}\fCenter M:\tr{A}^+$}
   \AXC{$y:\tr{\Delta}\fCenter N:\tr{B}^-$}
   \RightLabel{$\impr L$}
   \BIC{$z:\tr{\Gamma}\times\tr{\Delta}\fCenter(M[\pi_1z/x],N[\pi_2z/y]):\tr{A}^+\times\tr{B}^-$}
 \end{scprooftree}
+
+An exception to this are the $\I$-rules. Because we would like to
+be able to simply forget the $\q{}$-connective upon translation, so
+that we do not have to store unnecessary units in our lexicon, we have
+to insert or remove the units upon using these rules.
+
 Using these semantics, we can assign the indefinite article the type
 $np \impl n$.\footnote{%
   Quantifiers such as ``someone'' should be assigned the type $np\impl
@@ -729,18 +839,81 @@ If these steps are taken [1,2,3], we obtain interpretation
   exhaustive.
 }
 
-\section{Discussion}
+\section{Examples}
+
+In this section, we will present a number of analyses of the examples
+presented in \autoref{sec:introduction}. In the interest of brevity,
+we will summarise numerous applications of the residuation rules,
+beginning or ending with focusing or unfocusing rules with `dp', for
+\emph{display postulate}.
+In addition, we will leave out uninteresting subproofs.
+
+First off, we present an analysis of (\ref{ex:scope-ambiguity}),
+resulting in interpretation (\ref{ex:scope-ambiguity}b). The
+quantifier \textsc{every} is assigned the type
+$\q{(\q[np][s]{s})}\impl{n}$, and \textsc{someone} is assigned the
+type of a ``strong'' quantifier---that is to say,
+$\q{(\q[np][s]{s})}$.
+%
+\input{fig-example-1}
+%
+Secondly, we present an analysis of (\ref{ex:scope-island}), resulting
+in interpretation (\ref{ex:scope-island}a)---the only interpretation.
+%
+\input{fig-example-2}
+%
+As a third example, we show that we can analyse `a' as a weak
+quantifier, using the type ${np}\impl{n}$.
+We give an analysis of (\ref{ex:weak-quantifier}), resulting in the
+interpretation where the indefinite takes wide
+scope---(\ref{ex:weak-quantifier}b).
+The quantifier `a' takes scope when it is combined with book.
+%
+\input{fig-example-3}
+%
+Lastly, we present analyses of examples
+(\ref{ex:changing-result-type}) and (\ref{ex:parasitic-scope}).
+We demonstrate changing result types using the word `which', which we
+assign the type
+$$
+\q{(\q[np][np]{(({n}\impr{n})\impl({np}\impr{s})}))}.
+$$
+In the second, for parasitic scope, we deviate slightly from
+\citepos{barker2007} treatment of parasitic scope. We assign `same'
+(and `different') the type
+$$
+\q{(\q[{\q{(\q[({n}\himpl{n})][{\q[np]{s}}]{\q[np]{s}})}}][s]{s})}.
+$$
+What this type does is quantify over an expression twice---once
+normally, to plant its top-level quantifier, and once parasitically.
+Using this type, we can obtain the semantics advocated by
+\citet{kiselyov2015b}.
+The proofs for these two examples can be found in
+\autoref{fig:example-4-5}.
+
+\begin{sidewaysfigure}[ht!]
+  \centering
+  \input{fig-example-4}
+  \input{fig-example-5}
+  \caption{Analysis of examples (\ref{ex:changing-result-type}) and
+    (\ref{ex:parasitic-scope}).}
+  \label{fig:example-4-5}
+\end{sidewaysfigure}
+
+
+\section{Conclusion}
 We presented an improvement over \citepos{barker2015} {\NLCL} for which
 derivability is decidable, and which has a normal-form for proof
 search. In addition, it can analyse scope islands, and distinguish
 between strong and weak quantifiers, shown by the ability to analyse
-examples (\ref{ex:scope-ambiguity}-\ref{ex:changing-result-type}).
+examples (\ref{ex:scope-ambiguity}-\ref{ex:parasitic-scope}).
 Of these examples, (\ref{ex:scope-ambiguity}-\ref{ex:weak-quantifier})
 are representative examples of scope islands and strong and weak
 quantifiers, for which \citet{kiselyov2014} provides a purely semantic
-analysis. The remaining example, (\ref{ex:changing-result-type}), is
-our improvement over their work, and motivated us to start from
-\citepos{barker2015} syntactic approach.
+analysis. The remaining examples, (\ref{ex:changing-result-type}) and
+(\ref{ex:parasitic-scope}), are examples from the work by
+\citet{barker2015} which motivated us to start from their syntactic
+approach.
 
 \bibliographystyle{apalike}
 \bibliography{main}
