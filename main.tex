@@ -7,11 +7,11 @@
 
 \mainmatter%
 \title{Strong and weak quantifiers in focused \NLCL}
-%\author{Pepijn Kokke}
-%\institute{%
-%  Institute for Logic, Language and Computation\\
-%  University of Amsterdam, Amsterdam\\
-%  \email{pepijn.kokke@gmail.com}}
+\author{Pepijn Kokke}
+\institute{%
+  Institute for Logic, Language and Computation\\
+  University of Amsterdam, Amsterdam\\
+  \email{pepijn.kokke@gmail.com}}
 \maketitle
 
 \begin{abstract}
@@ -33,12 +33,12 @@ They cover these phenomena using a mechanism which works on the
 sentence's \emph{semantics}, independent of whatever form of grammar
 is used.
 
-At around the same time, \citepos{barker2015} published a book
+At around the same time, \citet{barker2015} published a book
 containing their findings on {\NLLAM} and {\NLCL}, a pair of grammar
 logics, both with the ability to analyse scope ambiguity using a
 strictly \emph{syntactic} mechanism.
 In addition, these logics can analyse ``parastic scope''
-\citep{barker2007,barker2015} and a quantifiers which change the
+\citep{barker2007,barker2015} and a quantifier which change the
 result type of the expressions they take scope over.
 However, neither of these logics is capable of analysing scope islands
 or strong and weak quantifiers.
@@ -47,10 +47,10 @@ In this paper, we rework {\NLCL} to a calculus which can analyse both
 scope islands and strong and weak quantifiers, without losing
 the ability to analyse parasitic scope or changing result types.
 For this, we base ourselves on work by \citet{moortgat1996} and
-\citet{moortgat2012}. As a bonus, their approach requires a strict
-focusing regime. Therefore, adopting it results in the elimination of
-spurious ambiguity, and greatly enhances the efficiency of proof
-search when compared to \citepos{barker2015} {\NLCL}.
+\citet{moortgat2012}. This approach requires a strict focusing
+regime. Therefore, as an added bonus, adopting it results in the
+elimination of spurious ambiguity, and greatly enhances the efficiency
+of proof search when compared to \citepos{barker2015} {\NLCL}.
 
 We will start our discussion by giving several examples of each of the
 aforementioned phenomena. The following sentences are examples of scope
@@ -98,13 +98,13 @@ ambiguity.
 %
 Example (\ref{ex:scope-island}) demonstrates a scope
 island: there is no reading in which ``every book'' scopes out of the
-embedded clause, as this reading would imply that the speaker made a
-separate speech act for every book: ``Kurt wrote
-Slaughterhouse-Five'', ``Kurt wrote Cat's Cradle'', ``Kurt
-wrote\ldots''
+embedded clause, as this reading would imply that there was
+potentially a different speaker for each book---``Alex said Kurt
+wrote Slaughterhouse-Five'', ``Jules said Kurt wrote Cat's Cradle'',
+``Sam said Kurt wrote\ldots''
 %
-Finally, example (\ref{ex:weak-quantifier}) shows that
-indefinites \emph{can} scope out of scope islands.
+Example (\ref{ex:weak-quantifier}) shows that indefinites \emph{can}
+scope out of scope islands.
 
 We add two more sentences, which are examples of a quantifier which
 changes the result type, and of parasitic scope, respectively. These
@@ -177,9 +177,15 @@ This connective is part of a new residuated family $\{\himpr, \hprod,
 \himpl\}$, which starts out as a copy of $\{\impr, \prod,
 \impl\}$.
 However, the addition of the~\eqref{eqn:lambda} postulate allows you
-to raise any constituent to the top-left position in the structure,
-where---if it has the right type---it can be ``resolved'' against the
-top-level type as follows:
+to raise any constituent to the top-left\footnote{%
+  It should be noted that the decision to raise quantifiers to the
+  top-\emph{left} position, as opposed to the top-\emph{right}, is a
+  stylistic choice made by \citet{barker2015}.
+  It is entirely possible to use the mirrored versions of the
+  \I\B\C-rules together with the ${(B\himpl A)\himpr C}$ type for
+  quantifiers.
+} position in the structure, where---if it has the right type---it can
+be ``resolved'' against the top-level type as follows:
 \begin{scprooftree}
   \AXC{$\Sigma[{A}]\fCenter{B}$}
   \RightLabel{\eqref{eqn:lambda}}
@@ -745,13 +751,10 @@ to search using the logical and residuation rules for $\impr, \prod,
 rules.\footnote{%
   In fact, no proof will ever explicitly use the logical or
   residuation rules for $\himpr, \hprod, \himpl$, leading to a
-  question of whether it is really necessary for $\himpl$ and $\himpr$
+ question of whether it is really necessary for $\himpl$ and $\himpr$
   to be fully residuated logical implications. But this is a matter
   for another paper.
 }
-
-
-%%% THIS IS WHERE I STOPPED
 
 \subsubsection{Continuation semantics for {\NLCL}}%
 \label{sec:continuation-semantics-2}
@@ -819,7 +822,7 @@ $np \impl n$.\footnote{%
   Quantifiers such as ``someone'' should be assigned the type $np\impl
   n\otimes n$, which means we must also extend {\NLCL} with logical
   products.
-}
+                                  }
 This will result in \emph{two} interpretations for
 (\ref{ex:scope-island}), and \emph{three} interpretations for
 (\ref{ex:weak-quantifier}), as required. Let us consider the
