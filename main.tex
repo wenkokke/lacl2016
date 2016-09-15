@@ -391,6 +391,11 @@ Lambek-Grishin calculus (LG).
 They refer to this calculus as fLG---for \emph{focused} LG, after
 the technique, pioneered by \citet{andreoli2001}, which
 they use in their calculus.
+Their version of focusing, however, is more general than that of
+\citeauthor{andreoli2001}, as they allow for the arbitrary assignment
+of polarities to atoms. \citepos{andreoli2001} schema can be recovered
+by assigning all atomic formulas \emph{negative} polarity.
+
 As NL is a fragment of LG, we can trivially extract a normal-form
 calculus for NL from their work.
 We will, in their style, refer to this calculus as fNL.
@@ -419,9 +424,6 @@ Equivalence between the display and focused variants of a system was
 proven for classical NL by \citet{bastenhof2011}.
 This proof can likely be adapted for {\NLCL}.
 
-% TODO: add reference for proof of equivalence between display NLCL
-% and the sequent calculus of NLCL
-
 However, it is important to realise that, even in the absence of a
 formal proof of equivalence between {\NLCL} and {f\NLCL}, the second
 remains a logical system which can analyse all phenomena which
@@ -439,8 +441,10 @@ At this point, {f\NLCL} still has a problem, which it shares with
 {\NLCL}: we do not have a decidable procedure for proof search.
 Since it is a grammar logic, this means that we do not have a
 procedure for \emph{parsing}.
-The cause of this is the \I-rule, which does not obey the substructure
-property.\footnote{%
+An easy way to obtain such a procedure is to change the system in such
+a way that backward-chaining search becomes decidable. The reason this
+is not decidable in {\NLCL} is because of the \I-rule, which does not
+obey the substructure property.\footnote{%
   In the case of {\NLCL}, this is the subformula property.
 }
 
