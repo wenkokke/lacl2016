@@ -10,3 +10,7 @@ dungeons
 .shake.database
 _build/
 .shake
+main.synctex.gz
+*.nav
+*.snm
+*.toc
